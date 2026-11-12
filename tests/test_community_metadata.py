@@ -57,3 +57,22 @@ def test_issue_forms_have_required_github_fields(name):
 def test_generated_demo_outputs_are_ignored():
     # Contributors are free to regenerate demo files in the checkout.
     assert "results/demo/" in (ROOT / ".gitignore").read_text(encoding="utf-8")
+
+
+def test_independent_review_challenge_is_discoverable():
+    guide = ROOT / "research" / "INDEPENDENT_REVIEW_CHALLENGE.md"
+    assert guide.is_file()
+    for name in ("README.md", "CONTRIBUTING.md", "docs/ROADMAP.md"):
+        assert "INDEPENDENT_REVIEW_CHALLENGE.md" in (ROOT / name).read_text(encoding="utf-8")
+    text = guide.read_text(encoding="utf-8")
+    for issue in range(1, 5):
+        assert f"runtime-assurance-lab/issues/{issue}" in text
+
+
+def test_independent_challenge_preserves_no_go_and_private_data_boundary():
+    text = (ROOT / "research" / "INDEPENDENT_REVIEW_CHALLENGE.md").read_text(encoding="utf-8")
+    assert "PAUSE_PRODUCT_BUILD" in text
+    assert "same" in text.lower() and "upstream" in text.lower()
+    assert "not" in text.lower() and "GPU" in text
+    assert "SECURITY.md" in text
+    assert "Do not upload" in text

@@ -10,7 +10,7 @@
 
 *A small, open-source research laboratory for testing claims about AI workload intent, observed configuration and evidence trust.*
 
-[Get started](#get-started) · [What is verified](#what-is-and-is-not-verified) · [Contribute](CONTRIBUTING.md) · [Research roadmap](docs/ROADMAP.md) · [Security](SECURITY.md)
+[Get started](#get-started) · **[Join the independent verification challenge](research/INDEPENDENT_REVIEW_CHALLENGE.md)** · [Contribute](CONTRIBUTING.md) · [Research roadmap](docs/ROADMAP.md) · [Security](SECURITY.md)
 
 </div>
 
@@ -32,6 +32,19 @@ Can independent, trustworthy cross-plane correlation detect meaningful drift tha
 | Ed25519 source-assertion tests with externally supplied pins | An independently operated trust/monotonic-checkpoint service |
 | Tamper, replay, rollback and forged-source regression tests | An audited production security boundary |
 | Reproducible synthetic experiments and vendor-native CPU release checks | A demonstrated advantage over upstream tools or real customer validation |
+
+## 🧪 Independent verification challenge — contributions welcome
+
+You can contribute **without a GPU, cluster, account credentials or existing access to NVIDIA/Google infrastructure**. Choose a task matching your background:
+
+- **First contribution:** [#1 · reproduce the quickstart on macOS/Windows](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/1) (`good first issue`).
+- **Research:** [#2 · try to falsify the standalone-product hypothesis](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2) using real upstream capabilities and **fair same-input controls**.
+- **Security:** [#3 · independently review source authenticity and replay boundaries](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3) (disclose vulnerabilities privately).
+- **Real-world validation:** [#4 · explore an authorized, privacy-safe G4 research partnership](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/4) (do **not** post live data).
+
+**[Read the full contribution challenge, evidence rubric and stop/go rules →](research/INDEPENDENT_REVIEW_CHALLENGE.md)**
+
+We welcome rigorous findings that tell us **not to build** a redundant product. No external reviewer, real G4 operator, community adoption, or live GPU evidence is claimed yet.
 
 ## Get started
 

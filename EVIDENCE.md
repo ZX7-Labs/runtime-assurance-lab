@@ -620,3 +620,34 @@ The final evidence-only GitHub commit and hosted follow-up, if created, will be 
 - **Local environment caveat:** a monolithic local pytest and an optional local `pip wheel --no-build-isolation` attempt timed out. Full pytest was then successfully covered by disjoint groups, and the exact source passed complete hosted 3.11/3.13 suites plus editable package installation; **a distribution wheel build has not been independently verified**. No PyPI package or GitHub Release was created.
 - **Actual contributor entrypoints:** [#1 reproducibility](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/1), [#2 upstream overlap](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2), [#3 safe threat-model review](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3). No one has agreed to maintain or fund the project; participation is not guaranteed.
 - **Research investment decision unchanged:** `PAUSE_PRODUCT_BUILD`. This publication makes the code legally reusable and contributions possible, but does not establish production readiness, live-G4 or G5 evidence, operational resource use, customers, or a novel capability. Future work should obtain independent same-workload G4 evidence and credible users, otherwise prefer focused upstream contributions.
+
+## Open-source independent-review recruitment checkpoint (2026-11-12)
+
+**Scope:** contributor discovery, reproducibility, and evidence collection only. No runtime implementation, security policy, signed-source trust, GPU/cluster access, or product GO decision changed. This work is **not** independent review or proof of market demand.
+
+- Re-read public GitHub `main` at `daf5a87ada4ad5ac754f4c63ae82697e6c3a8d2f`, the Apache-2.0 README, CONTRIBUTING.md, governance/security documents and three existing issues. The local source base was the previously verified 96-file open-source ZIP.
+- Marked [#1](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/1) `good first issue` / `documentation`, [#2](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2) `help wanted` / `question`, and [#3](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3) `help wanted`. The GitHub API reported the applied label lists.
+- Opened [#4](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/4), a distinct **privacy-safe independent G4 research partner** coordination issue (not a data-upload portal); no real evidence or credentials are requested publicly.
+- Added `research/INDEPENDENT_REVIEW_CHALLENGE.md` with four lanes (portability, fair same-input upstream falsification, responsible security review, potential real G4 operators), a CPU-only quickstart, reproducibility and acceptance rubric, security/reporting boundaries and explicit commercial stop criteria. Linked it from `README.md`, `CONTRIBUTING.md`, and `docs/ROADMAP.md`. Added two documentation contract tests to `tests/test_community_metadata.py`. No external contractor, adopter, reviewer or actual operator has been verified yet.
+
+**Local commands and verified results:**
+
+```sh
+PYTHONPATH=src python -m pytest -q
+# 301 passed in 32.32s (Python 3.13, CPU-only; 299 earlier + 2 new doc tests)
+python -m pytest -q tests/test_community_metadata.py
+# 18 passed in 0.08s
+PYTHONPATH=src python scripts/ci_smoke.py
+# offline_smoke=pass, 16 named synthetic subprocess scenarios
+python scripts/check_gates.py
+# passed=true, 7/7 STORED historical synthetic gates, NOT new real measurements
+python scripts/run_research_gate.py --verify-report results/research_gate.json
+# initial shell without installed package or PYTHONPATH: ModuleNotFoundError (environment invocation error)
+PYTHONPATH=src python scripts/run_research_gate.py --verify-report results/research_gate.json
+# decision=PAUSE_PRODUCT_BUILD, report_matches=true
+python -m compileall -q src tests scripts
+# success, exit 0
+# Verified relative links in four contributor-facing docs: 36 checked, 0 missing.
+```
+
+**G4/G5 unchanged:** No independent source/authenticated same-workload AICR/AIBOM evidence, protected trust roots, authorized Kubernetes/GPU testing, external security sign-off or customer proof. An issue invitation is not adoption; a CI green check is not a real workload attestation. Publishing this change must be followed by a whole-tree Git blob comparison and hosted Python 3.11/3.13 CI results before calling it a verified public checkpoint.

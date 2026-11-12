@@ -8,6 +8,7 @@
 | M8–M10: upstream overlap, competitor control, safe handoff | ✅ Research complete | Negative controls, reproducible reports |
 | M11: vendor-native official release CPU verification | ✅ Research complete | Pinned release hashes and vendor-native CI logs |
 | Open-source community foundation | ✅ License/docs/issue templates | Public SPDX license, reproducible tests, contributor guidance |
+| Independent reviewer / G4 partner recruitment | **OPEN CALL — no third-party validation recorded** | [Review challenge](../research/INDEPENDENT_REVIEW_CHALLENGE.md), [potential operator coordination](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/4) |
 | G4: real same-workload, equal-input validation | ⛔ Blocked | Approved cluster; independent signer/root/clock/rollback custody; matching AICR + AIBOM; blinded drift injections; real CPU/RAM/latency |
 | G5: product decision and supportability | ⛔ Blocked | Credible incremental value, users, independent threat and licensing review |
 
