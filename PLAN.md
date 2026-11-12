@@ -151,3 +151,11 @@ Gate G5 (commercialization, BLOCKED): before open-source/open-core/dual licensin
 ## M8 publication checkpoint (2026-11-12)
 
 M8 research source and tests published as GitHub `main` commit `87fb6031f19cf6c03f766b1022e6a1ae195ea50d`. The immutable source tree matched local Git blobs for **71/71** tracked files; GitHub Actions run [43227942102](https://github.com/ZX7-Labs/runtime-assurance-lab/actions/runs/43227942102) completed successfully on Python 3.11 and 3.13 (**199 tests passed per job**), including the NO-GO report check. These results do not waive `PAUSE_PRODUCT_BUILD` or unblock G4/G5. The only next admissible research is to secure independent real-world upstream/customer validation, not further product-scope coding.
+
+## M9 — substantial pre-G4 upstream parity/falsification workstream (research only)
+
+Status: **implementation and hosted validation pending** at planning start; leave G4 and G5 BLOCKED. No more runtime subsystems until actual incremental value is established.
+
+Scope: (1) re-verify pinned NVIDIA AICR v1.2.0 and Google k8s-aibom v1.6.2 upstream **public test fixtures**, byte-for-byte; (2) run independent extraction of already supplied CycloneDX model and image-digest claims; (3) exercise existing AICR/AIBOM adapters and show information/trust limits; (4) fail closed on tamper, spoofing, schema/identity contradictions, redirect/oversized inputs; (5) publish a pre-registered, blinded head-to-head protocol versus existing real upstream tools; (6) run a separate, no-secrets, CPU-only GitHub research CI job with network reads restricted to immutable official public fixture paths. See `research/g4_independent_validation_protocol.md` and `src/runtime_assurance_lab/upstream_preflight.py`.
+
+Acceptance: independently pinned Git blob identity of BOTH public fixtures, exact Google existing digest/model metadata counts, NVIDIA RecipeResult interpretation, **no cross-plane join across unrelated fixtures**, no authenticated `OK`, `PAUSE_PRODUCT_BUILD` retained, adversarial tests and Python 3.11/3.13 hosted CI green. Do not claim upstream binary execution, genuine cluster evidence, market fit or production value from pinned source test fixtures. The external G4/G5 blockers and kill criteria remain unchanged.

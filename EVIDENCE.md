@@ -449,3 +449,48 @@ python -m pip check -> pre-existing unrelated conflict moviepy 2.2.1 vs Pillow 1
 - **Hosted CI source commit:** [GitHub Actions 43227942102](https://github.com/ZX7-Labs/runtime-assurance-lab/actions/runs/43227942102), exact head `87fb6031...`, completed **success**. Individually retrieved the hosted logs: **Python 3.11: 199 passed in 3.82s** and **Python 3.13: 199 passed in 3.32s**. Both matrix jobs passed module compilation, synthetic smoke, historical acceptance-report check, and independent research NO-GO report recomputation. Hosted CI proves reproducibility of the offline policy/report, **not** real upstream parity, independently measured customer value, protected source trust roots or GPU execution.
 - **Investment conclusion:** `PAUSE_PRODUCT_BUILD` remains in force. All four independent gates are missing (authentic upstream evidence, external provenance/monotonic state, representative real controlled comparison, customer value validation). Synthetic M5 same-input comparator parity is **not** an NVIDIA/Google software head-to-head. Do not reinterpret green CI as a GO or resume standalone product development on the basis of these checks.
 - **Remaining next action:** arrange authorized, redacted authentic signed AICR/AIBOM evidence and an independent upstream comparison/customer discovery protocol; if equivalent coverage is confirmed, stop the standalone product or propose a focused upstream contribution. This evidence-only update is a subsequent commit and needs its own remote tree equality and CI confirmation.
+
+## 26. M9: major upstream-public-testdata falsification workstream (2026-11-12)
+
+**Investment rule:** User requested larger integrated work blocks and explicitly instructed **not to build a redundant product**. The prior M8 NO-GO remains authoritative: `PAUSE_PRODUCT_BUILD`. M9 is a pre-G4 evidence/benchmark protocol, **not a new runtime service**. No prior M1–M8 evidence overwritten. G4/G5 stay BLOCKED.
+
+**Upstream verification using connected GitHub, not locally run binaries:** GitHub's release API returned latest NVIDIA AICR v1.2.0 (published 2026-11-02) and Google k8s-aibom v1.6.2 (published 2026-10-22) as of this review. Git tag dereferencing and full upstream Git tree inspection established the exact immutable source paths/commits and 40-hex Git blob identities:
+
+- Google `GoogleCloudPlatform/k8s-aibom@47bf6418e40eee22905973528b879dc075181b3f`, `internal/bom/testdata/golden/vllm-deployment-output.json`, blob SHA-1 `b708db2f5a67c2210d29e712a7dd4f8f59487635`, expected 6,387 bytes. Public first-party *golden BOM* is CycloneDX 1.6 for an inference Deployment. It includes a container image SHA-256 claim, two model component claims with locators and one distinct model identity. No live controller, signatures or external trust evidence.
+- NVIDIA `NVIDIA/aicr@935e0746dc54da890a23c1ecca998244b3a25de7` (annotated v1.2.0 tag dereferenced), `pkg/operator/aicrjob/testdata/v1.1.2/recipe-h100-eks-ubuntu-training.json`, blob SHA-1 `7aefe761a870efcc7e74971b8a9d23b093f2918e`, expected 105,200 bytes. JSON `RecipeResult` / `aicr.run/v1` has 15 component refs and `training` criteria. `v1.1.2` names the checked-in fixture subdirectory, **not the upstream repository commit version**. Does not refer to Google's inference Deployment.
+
+**Implemented work:** New bounded research-only module `src/runtime_assurance_lab/upstream_preflight.py`; explicit opt-in CLI `scripts/run_upstream_preflight.py`; independent, fully constructed local controls in `tests/test_upstream_preflight.py`; isolated read-only public-asset job in `.github/workflows/offline-assurance.yml`; substantial preregistration `research/g4_independent_validation_protocol.md`; updated `README.md`, `PLAN.md`, `DECISIONS.md`, `UPSTREAM_AUDIT.md` and this evidence ledger. Network reads restricted to two pinned public raw GitHub URLs with no redirects and 256 KiB cap; Git blob hashes checked, then strict JSON parsed. SHA-1 here identifies upstream published bytes, **not independently trusted signatures**. No local network allowed in this sandbox; official source assets will be *downloaded and actually parsed* only by the segregated hosted CI research job. Existing local tests mock fixed assets and source fetches without pretending to run upstream binaries.
+
+**Substantive independent negative control:** Google upstream golden BOM already contains image-digest and model-source evidence, while RAL's summary-only AIBOM adapter does not promote the untrusted image digest. An AIBOM CR is constructed *locally* to probe adaptation; its `Ready` status is synthetic, not upstream-derived. NVIDIA's sample is a training recipe and Google's sample is an inference inventory: no authenticated workload join, no evidence of incremental detection or execution. The valid preflight outcome remains `PAUSE_PRODUCT_BUILD`. The G4 protocol fixes competitor parity, independent custody, randomized/blinded labels, negative evidence classes, end-to-end metrics and hard stop/kill rules before any live study.
+
+**Actual local tests/debugging:**
+
+```text
+PYTHONPATH=src python -m pytest -q tests/test_upstream_preflight.py --disable-warnings --maxfail=1
+# FIRST: 1 failure (test wrongly prohibited 'v1.' in a legitimate testdata subdirectory; fixed assertion to require exact pinned commit segment)
+PYTHONPATH=src python -m pytest -q tests/test_upstream_preflight.py --disable-warnings --maxfail=2
+# SECOND: 1 failure (two fake source pins had identical test URLs; fixed synthetic source names; not production source logic)
+PYTHONPATH=src python -m pytest -q tests/test_upstream_preflight.py
+# 27 passed in 3.22s
+PYTHONPATH=src pytest -q --disable-warnings --durations=5
+# timed out in the invocation wrapper partway through; NOT counted as pass
+# Full verbose background run, process exit checked by its completed result file:
+PYTHONPATH=src python -m pytest -vv --disable-warnings
+# FINAL: 226 passed in 37.22s; exit code 0
+PYTHONPATH=src python scripts/ci_smoke.py
+# offline_smoke=pass, all 14 existing process-level checks
+python scripts/check_gates.py
+# passed=true, all 7 STORED/HISTORICAL synthetic pilot gates; not live benchmark
+PYTHONPATH=src python scripts/run_research_gate.py --verify-report results/research_gate.json
+# PAUSE_PRODUCT_BUILD, report_matches=true, four independent gates still missing
+PYTHONPATH=src python scripts/run_upstream_preflight.py --list-pins
+# two pinned upstream public source paths listed without network
+python -m compileall -q src tests scripts
+# completed without error
+```
+
+**Adversarial controls:** 27 new targeted tests cover exact-byte mutation even for semantically equivalent JSON, malformed/oversized/duplicate-key/nonfinite fixtures, schema/version invalidation, missing/extra provider data, missing/conflicting workload coordinates, malformed image hashes, suspicious model claims, recipe-version mismatch, duplicated components, missing trusted cross-plane binding, spoofed HTTP redirect/non-200 responses and source tampering. Positive control is synthetic and explicitly never authorizes authenticated runtime `OK`. The no-network CLI default is tested.
+
+**Resource and scope:** No new Python package dependency, secrets, deployment, GPU, Kubernetes or production data. Local tests exercised fake constructed data; GitHub public network fetch is opt-in and isolated from existing offline matrix. No independent real signed AICR/k8s-aibom exports, actual provider binaries, resource measurements or customer validation. Git-hosted source parity job must pass before this milestone is called **hosted preflight verified**.
+
+**Next actions:** Commit exact immutable local tree; publish using non-force expected GitHub head lease; verify all committed Git blob identities; inspect both Python versions plus public fixture fetch job; capture SHA-256 of actually fetched source data and reported overlap results in subsequent `EVIDENCE.md` checkpoint. If public test fixtures fail or change, preserve failure and audit against upstream before modifying pins. Do not update M8 NO-GO to GO based on public fixture checks alone.

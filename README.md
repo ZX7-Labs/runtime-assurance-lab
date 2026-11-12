@@ -79,3 +79,20 @@ PYTHONPATH=src python -m pytest -q tests/test_research_gate.py
 ```
 
 `research/upstream_overlap.json` documents checked vendor capabilities and falsifiers; `results/research_gate.json` is a deterministic **research NO-GO** report. Exit 0 from the script means the historical report matches recomputation; it **never authorizes production**. Do not use generated checklists or self-entered data as proof of real-world product value. Only authentic upstream evidence, an independently managed trust anchor, representative blinded baseline measurements, and a customer-backed requirement can justify reopening the investment decision. See `PLAN.md` M8.
+
+## Pre-G4 upstream overlap verification (M9, research-only)
+
+A separate GitHub Actions **public upstream fixture preflight** checks two immutable first-party repository test fixtures against pinned Git blob hashes, extracts existing Google CycloneDX evidence and probes the already-written RAL adapters. It deliberately **does not join** NVIDIA's training recipe to Google's unrelated inference BOM or assert signed/live GPU evidence.
+
+```sh
+# Offline, lists the only two public upstream source pins; no network:
+PYTHONPATH=src python scripts/run_upstream_preflight.py --list-pins
+
+# Explicit opt-in **public** network read, used in isolated GitHub CI research job:
+PYTHONPATH=src python scripts/run_upstream_preflight.py --fetch-public-testdata
+
+# Original source/policy tests remain offline:
+PYTHONPATH=src python -m pytest -q
+```
+
+See `research/g4_independent_validation_protocol.md` for the blinded, independent real-upstream comparison, trust requirements, adverse cases and stop criteria. The investment decision is still **PAUSE_PRODUCT_BUILD**; no real G4 equivalence test has been run. Public source test fixture integrity is not upstream publisher identity or production attestation.
