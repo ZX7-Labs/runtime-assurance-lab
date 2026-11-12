@@ -73,3 +73,38 @@ Milestone M5 (offline incremental-value falsification / negative control, PUBLIS
 Gate G4 (real integration, BLOCKED): verify actual AICR recipe/snapshot and k8s-aibom CRD schema/version, export redacted allowed fields, compare against AICR-only+k8s-aibom-only+Sigstore+policy-enforced baselines, with randomized controlled injection, blinded labels, at least 2 workloads classes and >1 cluster topology. Demonstrate recall/precision, end-to-end latency and cluster overhead. Do not deploy before access approval.
 
 Gate G5 (commercialization, BLOCKED): before open-source/open-core/dual licensing, complete derivative-work/dependency licensing, independent threat review, user validation and actual evidence of unmet need. No pricing, private data ingestion, or publication during this phase.
+
+## M6 — source-forgery containment before G4 (offline, implemented and hosted CI verified 2026-11-12)
+
+**S-018 reproduction:** v1 `evaluate()` accepted a counterfeit, complete normalized observation with `model_confidence="verified"` and returned `OK`, without checking its origin. This was an untrusted label, NOT signature verification. Keep M1–M5 as completed historical research, but their pre-M6 accuracy/microbench numbers are **claim-only historical diagnostics**, not authenticated assurance.
+
+### Competing remediation architectures
+
+| Criterion | A — independently pinned offline source gate | B — standardized externally anchored attestation/transparency verification |
+| --- | --- | --- |
+| Inputs | Exact raw observation, detached Ed25519 proof, out-of-band pinned authority and intent hashes, external expected sequence and predecessor | Trusted workload identity via Sigstore/DSSE bundles, verified material/identity policy, external transparency checkpoint, AICR/AIBOM source-level attestations |
+| Authenticity | Key identity tied to allowlisted source/workload by immutable pinned manifest | Issuer identity and delegation policy verified via upstream attestation/bundle trust roots |
+| Replay/rollback | Fail closed unless caller supplies durable next sequence and predecessor from a state it controls | Signed/anchored append-only log checkpoints and inclusion/consistency proof with durable monotonic state |
+| Trust failure | Explicit `UNKNOWN`; no source-supplied `verified` flag can authenticate itself | Explicit `UNKNOWN`; reject invalid/missing upstream bundle, root or log proof |
+| Feasibility now | Implement/test entirely offline using existing PyCA dependency, no new permissions | BLOCKED: authentic upstream bundles/identity policy and external anchor/cluster absent |
+| Residual risk | A compromised authorized signer can still lie; ephemeral or self-supplied anchors offer no real security | Transparency alone does not prove measured runtime truth; adds dependency and operational requirements |
+
+**Decision:** prototype A as the smallest defensible *local containment* while preserving B as the G4 interop target. Never call the prototype a Sigstore verifier or execution attestation; do not invent a CA or hosted signing service.
+
+### Trust-boundary requirements (must be checked together)
+
+1. **Origin/source identity:** a separately configured `source_id`/`key_id` and per-workload allowlist; compare with signed envelope and normalized observation.
+2. **Trusted signing keys:** exact manifest bytes must match a SHA-256 pin established **independently of input files and observer**. Neither a CR `signed` label nor a public key shipped with its claim establishes trust.
+3. **Signatures and canonicalization:** detached Ed25519 over a domain-separated, schema-exact signable envelope, containing SHA-256 of **exact observation bytes**; strict UTF-8 JSON rejects duplicate keys/nonfinite input. Local sorted-key JSON canonicalization is **NOT JCS/DSSE/Sigstore interoperable**.
+4. **Provenance and freshness:** signature covers source identity, workload, timestamp and digest; externally supplied UTC time checks age/skew. A signature validates the authorized source's assertion—not inference execution or actual model hash verification.
+5. **Replay/rollback:** require separately held exact `expected_sequence` and `expected_prev_head`; return `UNKNOWN` for a replay, gap, branch or rollback. On verified input expose a `next_checkpoint`, but **caller** must persist and protect it transactionally; code does not provide a secure store or automatic advancement.
+6. **Intent provenance:** exact intent-byte digest must independently match an operator-pinned SHA-256; an attacker-controlled intent and a forged matching observation cannot establish assurance.
+7. **Fail closed:** untrusted `evaluate`, AIBOM, cross-plane receipts and locally signed journals cannot promote raw records to authenticated `OK` or `DRIFT`. Explicit `evaluate-authenticated` is the only CLI path that permits authenticated-source comparison.
+
+**Acceptance:** reproducible forged-source `OK` before / `UNKNOWN` after; valid pinned signer yields source-authenticated `OK` for a synthetically matching claim; source/key/workload mismatches, tampering, invalid proofs, timestamp misbinding, replay, rollback, missing anchors and invalid/changed roots fail closed. Preserve historical M5 numbers with a clearly labeled *claim-only* comparator; policy version bumps to `ral-intent-observation-v2-provenance-gate` so old signed verdicts cannot silently replay.
+
+**Security stop:** do not use this proof to assert running AI model identity or production conformance. Before G4/G5, require source-specific upstream signature/identity semantics, independently protected key trust and anti-rollback store, secure trusted time, external review and authentic real workload evidence. Do not ship an `OK` claim from a raw AIBOM CR, unanchored recipe pin, a self-supplied key or a replayed signed journal.
+
+**Hosted verification (2026-11-12):** the public GitHub `main` source commit `16fc4f4cca166912939b03fd3128b17bd076e8d0` passed Python 3.11 and 3.13 matrix run 43167150345, with 158 tests per job. That verifies source behavior on standard runners only; external source-authentication roots and durable checkpoint storage are still absent.
+
+**Upstream interoperability constraint:** NVIDIA AICR already documents offline `aicr verify --trust-root` bundle verification and explicit `--require-creator` signer controls ([official artifact verification](https://docs.nvidia.com/aicr/latest/user-guide/artifact-verification/)); its root is additive to the embedded public-good root, so signer identity must still be constrained. The PoC has **not** run this verifier on authentic evidence. Use those upstream capabilities and a separately monitored trust root in future G4 rather than generalizing this local Ed25519 envelope.
