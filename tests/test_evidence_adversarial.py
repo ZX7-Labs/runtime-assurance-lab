@@ -123,3 +123,18 @@ def test_invalid_trust_container_fails_closed(bad_trust):
 def test_invalid_external_anchor_fails_closed(bad_head):
     log, trust, _=build_log()
     assert anchored_verify(log,trust,(bad_head,len(log))) == (False,'INVALID_INPUT')
+
+
+def test_validly_signed_decision_cannot_insert_extra_assurance_claims():
+    from runtime_assurance_lab.cli import demo
+    from runtime_assurance_lab.evidence import verify_decision_semantics
+    from pathlib import Path
+    import json, tempfile
+    with tempfile.TemporaryDirectory() as directory:
+        out = Path(directory)
+        demo(Path(__file__).parents[1]/'fixtures', out)
+        events = json.loads((out/'journal.json').read_text())
+        # A malicious/compromised authorized decision signer could sign extra fields.
+        events[2]['payload']['production_ready'] = True
+        ok, reason = verify_decision_semantics(events, trusted_now='2026-11-12T03:25:00+00:00')
+        assert (ok, reason) == (False, 'UNEXPECTED_DECISION_FIELDS')

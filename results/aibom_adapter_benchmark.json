@@ -1,0 +1,10 @@
+{
+  "cpu_ms": 97.079,
+  "loops": 1000,
+  "max_us": 623.039,
+  "median_us": 86.141,
+  "p95_us": 135.236,
+  "scope": "synthetic pre-parsed JSON adapter only; not cluster detection latency",
+  "tracemalloc_peak_bytes": 36600,
+  "upstream_schema": "k8s-aibom/v1.6.2 AIBOM/v1beta1"
+}

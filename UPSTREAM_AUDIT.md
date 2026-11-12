@@ -29,3 +29,12 @@ All links below are primary vendor or upstream-project sources. Source code was 
 - NVIDIA reports k8s-aibom ~4 API server requests/min, 2.2 mCPU average, 28–34 MiB steady state under its qualified conditions. These are **upstream's** measurements, not measured here and not directly comparable to the Python offline experiment.
 - AIBOM can exist when a pod is pending; its `Ready=True` is not verified successful execution. `verified` model means cryptographic signature subject to identity constraints, not proof of active inference.
 - Source overlap may already solve much of the use case; this repo does not claim a new market gap. Actual source-compatible correlation requirements are hypotheses until tested.
+
+## v1.6.2 schema-level check performed 2026-11-12
+
+Read upstream, pinned **tag `v1.6.2`**, Git commit `47bf6418e40eee22905973528b879dc075181b3f`:
+- [AIBOM v1beta1 types](https://github.com/GoogleCloudPlatform/k8s-aibom/blob/v1.6.2/api/v1beta1/aibom_types.go): `apiVersion: aibom.k8saibom.dev/v1beta1`, `kind: AIBOM`; `spec.workloadRef`, `status.summary.workload`, `status.summary.models[].{identity,confidence,signed}`, `status.bomDocument.{sha256,inline,external,truncated}`, `lastReconciled`, `observedGeneration`. `ModelSummary.identity` is not a digest. `ModelSummary.signed=verified` is a controller-reported claim; this PoC does not verify its provenance.
+- [Condition definitions](https://github.com/GoogleCloudPlatform/k8s-aibom/blob/v1.6.2/api/v1beta1/aibom_conditions.go): `Ready`, `Stale`; `Ready=True` means BOM generation, **not model execution**.
+- [Group version](https://github.com/GoogleCloudPlatform/k8s-aibom/blob/v1.6.2/api/v1beta1/groupversion_info.go): `aibom.k8saibom.dev/v1beta1`.
+
+The fixture `fixtures/aibom-v1beta1-synthetic.json` is handwritten to match the inspected *shape*, **not captured from an actual upstream controller**; schema compatibility has not been established by running a real release. Do not infer that a synthetic inline CycloneDX document or matching CR `bomHash` authenticates a producer. No upstream code was copied.

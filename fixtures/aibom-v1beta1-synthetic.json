@@ -1,0 +1,62 @@
+{
+  "apiVersion": "aibom.k8saibom.dev/v1beta1",
+  "kind": "AIBOM",
+  "metadata": {
+    "generation": 1,
+    "name": "synthetic-aibom",
+    "namespace": "lab",
+    "uid": "synthetic-not-a-kubernetes-uid"
+  },
+  "spec": {
+    "bomFormat": "CycloneDX",
+    "bomSpecVersion": "1.6",
+    "workloadRef": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "name": "demo"
+    }
+  },
+  "status": {
+    "bomDocument": {
+      "format": "CycloneDX",
+      "inline": {
+        "data": "eyJib21Gb3JtYXQiOiJDeWNsb25lRFgiLCJjb21wb25lbnRzIjpbXSwic2VyaWFsTnVtYmVyIjoidXJuOnV1aWQ6MDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAxIiwic3BlY1ZlcnNpb24iOiIxLjYifQ=="
+      },
+      "sha256": "422c95972d52b9089731b72c6633bc9f949e9a191882de0828557fe4d74ac160",
+      "size": 124,
+      "specVersion": "1.6"
+    },
+    "bomHash": "422c95972d52b9089731b72c6633bc9f949e9a191882de0828557fe4d74ac160",
+    "conditions": [
+      {
+        "reason": "BOMGenerated",
+        "status": "True",
+        "type": "Ready"
+      },
+      {
+        "reason": "Fresh",
+        "status": "False",
+        "type": "Stale"
+      }
+    ],
+    "lastReconciled": "2026-11-12T03:25:00Z",
+    "observedGeneration": 1,
+    "summary": {
+      "models": [
+        {
+          "confidence": "declared",
+          "identity": "hf://lab/approved",
+          "signed": "verified",
+          "source": "container_arg"
+        }
+      ],
+      "workload": {
+        "apiVersion": "apps/v1",
+        "category": "inference",
+        "kind": "Deployment",
+        "name": "demo",
+        "namespace": "lab"
+      }
+    }
+  }
+}

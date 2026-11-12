@@ -6,10 +6,11 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 import sys
-from .contracts import Intent, Observation
+from .contracts import Intent, Observation, timestamp
 from .evaluate import POLICY_VERSION, evaluate
 from .evidence import append, canonical, generate_signer, head, sha, verify, verify_decision_semantics
 from .bench import run, FIXED_NOW
+from .aibom_adapter import normalize_aibom
 
 
 # Bound local inputs: the PoC has no streaming parser or service-level load shedding.
@@ -90,6 +91,10 @@ def main(argv=None) -> int:
     q.add_argument("--intent", required=True, type=Path)
     q.add_argument("--observation", required=True, type=Path)
     q.add_argument("--now", required=True, help="timezone-aware ISO-8601")
+    a = sub.add_parser("evaluate-aibom", help="Read-only k8s-aibom v1.6.2 CR export; cannot grant verified identity")
+    a.add_argument("--intent", required=True, type=Path)
+    a.add_argument("--aibom", required=True, type=Path)
+    a.add_argument("--now", required=True, help="timezone-aware ISO-8601")
     d = sub.add_parser("demo", help="Generate synthetic signed journal and untrusted demo checkpoint")
     d.add_argument("--fixtures", type=Path, default=Path("fixtures"))
     d.add_argument("--output", type=Path, default=Path("results/demo"))
@@ -106,6 +111,13 @@ def main(argv=None) -> int:
         if args.action == "evaluate":
             _, _, decision = evaluation(args.intent, args.observation, datetime.fromisoformat(args.now.replace("Z", "+00:00")))
             result = decision.to_dict()
+            code = 0 if decision.status == "OK" else 2
+        elif args.action == "evaluate-aibom":
+            intent = Intent.parse(read_json(args.intent))
+            adapted = normalize_aibom(read_json(args.aibom))
+            decision = evaluate(intent, adapted.observation, now=timestamp(args.now))
+            result = {**decision.to_dict(), "adapter": {"source_version": adapted.source_version,
+                         "limitations": list(adapted.limitations)}}
             code = 0 if decision.status == "OK" else 2
         elif args.action == "demo":
             result = demo(args.fixtures, args.output)

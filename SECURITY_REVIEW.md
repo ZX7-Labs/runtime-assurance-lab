@@ -12,6 +12,12 @@ The first implementation checked event envelope signatures, parent workload bind
 
 Malformed `refs` containing non-string elements could throw instead of returning invalid proof. **Fix:** explicit type guard before constructing a set; attack test added.
 
+## Finding S-003 (MEDIUM): Ambiguous JSON and unbounded local files
+
+Default `json.loads` accepted duplicate keys with last-key-wins semantics and nonstandard `NaN`/`Infinity`; local inputs had no file-size limit. The verifier also assumed a mapping-shaped trust store and a syntactically valid external anchor.
+
+**Fix implemented:** reject duplicate keys at all nesting depths, nonfinite numeric tokens, invalid UTF-8 and files larger than 8 MiB; bound accepted journal event count to 10,000; validate trust type and external head form. Added CLI, parser, malformed-trust and malformed-anchor regressions. These are offline PoC limits, not a comprehensive parser/DoS threat model.
+
 ## Outstanding material risks (not resolved here)
 
 - **Trust root / head:** demonstration writes keys/checkpoint alongside journal; an attacker replacing all three could defeat detection. External WORM/transparency anchoring and identity/key rotation are mandatory for any real service.
@@ -19,7 +25,7 @@ Malformed `refs` containing non-string elements could throw instead of returning
 - **Time:** freshness relies on an externally trustworthy UTC clock; local test fixed time is a deterministic fixture, not a clock attestation.
 - **Sampling/coverage:** untracked namespaces, unsupported workload kinds, pending pods, incomplete digests and unresolved models cannot be declared clean. Cluster-wide informer read scope creates real sensitive metadata exposure.
 - **Race/consistency:** cross-plane snapshot versioning, event lag/ordering, revoked identities, resync and recovery are not implemented on real APIs. No concurrency tests, source-authentication tests or Byzantine failure model.
-- **Availability/DoS:** memory limits and input/event journal length caps are not set for hostile multi-tenant JSON. Expose nothing to production until bounded parsers and load shedding exist.
+- **Availability/DoS:** a coarse 8 MiB per-file limit and 10,000-event cap now exist; nested JSON depth, aggregate input size, process limits and streaming/load-shedding for hostile multi-tenant input are NOT addressed. Expose nothing to production.
 - **Portability:** simple `json.dumps(sort_keys=True)` is a local canonical encoding contract, not RFC 8785 or Sigstore's protocol. Do not interoperate or advertise it as Sigstore-compliant.
 
 Review disposition: acceptable **only** as a synthetic local research checkpoint. No production sign-off.

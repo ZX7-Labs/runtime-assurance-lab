@@ -125,6 +125,9 @@ def verify_decision_semantics(events: list[dict[str, Any]], *, trusted_now: str)
                 continue
             decisions += 1
             payload = event["payload"]
+            required = {"workload", "status", "rules", "policy_version", "evaluated_at"}
+            if set(payload) not in (required, required | {"fixture"}):
+                return False, "UNEXPECTED_DECISION_FIELDS"
             if payload.get("evaluated_at") != trusted_now or payload.get("policy_version") != POLICY_VERSION:
                 return False, "UNTRUSTED_POLICY_OR_CLOCK"
             refs = event["refs"]

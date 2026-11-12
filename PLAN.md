@@ -39,6 +39,7 @@ Core rule `evaluate(intent, observation, now, max_age=300s, skew=30s) -> Finding
 ## Module boundaries / recovery
 
 - `contracts.py`: schema and bounds; never silently normalize ambiguous input.
+- `aibom_adapter.py`: version-pinned, read-only **offline** AIBOM v1beta1 CR adapter; maps only actual upstream summary fields, never upgrades unsigned CR claims to verified identity.
 - `evaluate.py`: pure deterministic policy, no I/O.
 - `evidence.py`: Ed25519 event envelope, causal links, role constraints, anchor verification, separate semantic recomputation.
 - `bench.py`: labeled synthetic cases, honest limited local comparator, processing/CPU/Python heap measurements.
@@ -55,6 +56,8 @@ Gate G1 (local contracts): strict parse; missing/ambiguous fields fail; `OK` req
 Gate G2 (tamper/semantic): all enumerated local signature, rewrite, reorder, role, reference, truncation and signed-false-decision attacks rejected under independently anchored trust assumptions. Full rollback protection is impossible without external anchoring.
 
 Gate G3 (synthetic performance): establish baseline first; then provisionally require >=98% recall and <=1% FPR on constructed labeled cases; p95 evaluation <1ms and <=20x the in-process naive comparator; peak measured Python heap allocation <=2x local baseline plus 1MiB. These are **pilot sanity gates**, calibrated from initial local measurement; not deployable SLOs. Capture event-to-detection latency and pod CPU/RSS only on authorized real clusters.
+
+Milestone M1 (offline integration preparation, DONE 2026-11-12): pin Google k8s-aibom `v1.6.2` tag and inspect the upstream `api/v1beta1` schema. Accept exported JSON AIBOM CR without any cluster API permission; verify namespace/workload binding, Ready/Stale and observedGeneration, timestamp presence, and inline CycloneDX 1.6 BOM hash/size/type. Return `UNKNOWN` on healthy synthetic CR because model/image digests, AICR recipe association, and independent signature verification are not established by the CR summary. Fail closed on malformed BOMs, conflicting identities and schema mismatches. This does NOT satisfy G4.
 
 Gate G4 (real integration, BLOCKED): verify actual AICR recipe/snapshot and k8s-aibom CRD schema/version, export redacted allowed fields, compare against AICR-only+k8s-aibom-only+Sigstore+policy-enforced baselines, with randomized controlled injection, blinded labels, at least 2 workloads classes and >1 cluster topology. Demonstrate recall/precision, end-to-end latency and cluster overhead. Do not deploy before access approval.
 
