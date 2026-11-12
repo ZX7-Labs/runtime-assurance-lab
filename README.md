@@ -106,3 +106,5 @@ See [`research/g4_operator_handoff.md`](research/g4_operator_handoff.md) for syn
 ### Vendor-native upstream baseline (research-only, no cluster)
 
 The independent, optional CI job `.github/workflows/native-upstream-baseline.yml` runs Google's published release provenance check and NVIDIA's native embedded recipe catalog verifier on exact pinned public release archives. Source and trust limitations are in `research/g4_vendor_native_baseline.md`. It does not run Kubernetes or GPU tests, authenticate a workload or override the research gate `PAUSE_PRODUCT_BUILD`.
+
+The native release study has passed an actual GitHub-hosted CPU job ([run 43244660419](https://github.com/ZX7-Labs/runtime-assurance-lab/actions/runs/43244660419)); an earlier missing-argument failure is preserved in the evidence ledger. Its machine-readable public-release-only result is `results/g4_vendor_native_cpu.json`. No real G4 GPU/cluster verification has occurred; `PAUSE_PRODUCT_BUILD` is still in effect.

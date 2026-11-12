@@ -37,3 +37,7 @@ Upstream evidence:
 - NVIDIA artifact verification: https://docs.nvidia.com/aicr/latest/user-guide/artifact-verification/
 - Google k8s-aibom v1.6.2: https://github.com/GoogleCloudPlatform/k8s-aibom/releases/tag/v1.6.2
 - Google native ML-BOM and signature confidence: https://github.com/GoogleCloudPlatform/k8s-aibom/tree/v1.6.2
+
+## Verified hosted outcome (2026-11-12)
+
+First run `43243414648` failed on an invalid AICR invocation lacking the required `<bundle-path>`; this is recorded, not counted. Fixed by downloading/pinning NVIDIA `recipe-catalog.sigstore.json` and checking its detached Sigstore bundle in the actual CLI. Hosted run [43244660419](https://github.com/ZX7-Labs/runtime-assurance-lab/actions/runs/43244660419) then passed all three tool-native commands, including Google's independent GitHub archive provenance check. See `results/g4_vendor_native_cpu.json` and `EVIDENCE.md` §32. **The only admissible decision remains `PAUSE_PRODUCT_BUILD`**; a signed software release is not a runtime attestation.

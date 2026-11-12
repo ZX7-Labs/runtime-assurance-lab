@@ -1,0 +1,39 @@
+{
+  "actual_kubernetes_cluster_connected": false,
+  "cross_plane_link_verified": false,
+  "decision": "PAUSE_PRODUCT_BUILD",
+  "g4_completed": false,
+  "g5_completed": false,
+  "google_cli_invocation": {
+    "exit_code": 0,
+    "passed": true,
+    "tool": "kubectl-aibom"
+  },
+  "google_release_attestation": {
+    "exit_code": 0,
+    "passed": true,
+    "tool": "gh"
+  },
+  "gpu_execution_verified": false,
+  "hosted_record": {
+    "content_note": "Tool results copied from successful GH-hosted logs; source_type narrowed to avoid classifying NVIDIA binary as independently publisher-signed. No actual cluster, AIBOM CR, or GPU inference observed.",
+    "first_successful_native_commit": "57d41f3b9a2a7c525d6d19a6ab558aac69d3ae12",
+    "first_successful_native_run": "https://github.com/ZX7-Labs/runtime-assurance-lab/actions/runs/43244660419",
+    "initial_failed_run": "https://github.com/ZX7-Labs/runtime-assurance-lab/actions/runs/43243414648"
+  },
+  "independent_real_customer_comparison": false,
+  "nvidia_embedded_catalog_verification": {
+    "exit_code": 0,
+    "passed": true,
+    "tool": "aicr"
+  },
+  "same_workload_upstream_evidence": false,
+  "schema": "g4-vendor-native-public-baseline-v1",
+  "source_type": "PUBLIC_VENDOR_RELEASES_PARTIAL_SIGNED_METADATA_NO_RUNTIME_EVIDENCE",
+  "verified_release_shas": {
+    "aibom": "5a7f7e98e55d59ce3f7e5fa9ce385b544775ddefd32bcdf20b6e9fc234b2a7c0",
+    "aibom_provenance": "a90db7b45bd48ae6663d48494287b11a6b6bd0339a338de3a2eca891209a62f8",
+    "aicr": "3ff6935fd7988373903a2a30f1c24a74a5f8a9052a310615db19fcfec4cfe9a2",
+    "aicr_catalog_sigstore": "80744565b8d79da72afc0720dc551e9664eb91e1d94da90c1fad1ba65d8802cc"
+  }
+}

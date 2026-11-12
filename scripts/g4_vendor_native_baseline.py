@@ -126,7 +126,7 @@ def execute() -> dict:
         google_result = run_required([str(aibom), "--help"])
         return {
             "schema": "g4-vendor-native-public-baseline-v1",
-            "source_type": "PUBLIC_SIGNED_VENDOR_RELEASES_NO_RUNTIME_EVIDENCE",
+            "source_type": "PUBLIC_VENDOR_RELEASES_PARTIAL_SIGNED_METADATA_NO_RUNTIME_EVIDENCE",
             "verified_release_shas": {key: RELEASES[key]["sha256"] for key in ("aicr", "aicr_catalog_sigstore", "aibom", "aibom_provenance")},
             "google_release_attestation": provenance_result,
             "nvidia_embedded_catalog_verification": catalog_result,

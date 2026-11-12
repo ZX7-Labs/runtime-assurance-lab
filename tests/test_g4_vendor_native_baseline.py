@@ -107,3 +107,19 @@ def test_native_contract_binds_catalog_bundle_and_independent_gh_check(monkeypat
     assert any(x[1:3] == ["recipe", "verify-catalog"] and len(x) == 4 for x in observed)
     assert report["g4_completed"] is False
     assert report["decision"] == "PAUSE_PRODUCT_BUILD"
+
+
+def test_recorded_native_result_is_bounded_to_public_release_checks():
+    from json import loads
+    report = loads((ROOT / "results/g4_vendor_native_cpu.json").read_text())
+    assert report["verified_release_shas"] == {
+        key: native.RELEASES[key]["sha256"] for key in native.RELEASES
+    }
+    assert report["source_type"] == "PUBLIC_VENDOR_RELEASES_PARTIAL_SIGNED_METADATA_NO_RUNTIME_EVIDENCE"
+    assert all(report[k]["passed"] is True for k in (
+        "google_release_attestation", "nvidia_embedded_catalog_verification", "google_cli_invocation"
+    ))
+    for key in ("g4_completed", "g5_completed", "gpu_execution_verified", "cross_plane_link_verified",
+                "actual_kubernetes_cluster_connected", "same_workload_upstream_evidence", "independent_real_customer_comparison"):
+        assert report[key] is False
+    assert report["decision"] == "PAUSE_PRODUCT_BUILD"
