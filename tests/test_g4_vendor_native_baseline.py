@@ -37,7 +37,9 @@ def test_broken_release_rejected(raw):
 
 def test_signed_bundle_requires_independent_verifier(monkeypatch):
     def download(key):
-        return _tgz("aicr" if key == "aicr" else "kubectl-aibom") if key != "aibom_provenance" else b"signed-metadata"
+        if key in ("aicr_catalog_sigstore", "aibom_provenance"):
+            return b"signed-metadata"
+        return _tgz("aicr" if key == "aicr" else "kubectl-aibom")
     monkeypatch.setattr(native, "download", download)
     monkeypatch.setattr(native.shutil, "which", lambda _: None)
     with pytest.raises(native.BaselineError, match="independent gh attestation verifier unavailable"):
@@ -82,3 +84,26 @@ def test_native_command_failure_fails_closed():
 def test_no_implicit_go_flag():
     source=Path(native.__file__).read_text()
     assert '"g4_completed": False' in source and '"decision": "PAUSE_PRODUCT_BUILD"' in source
+
+
+def test_native_contract_binds_catalog_bundle_and_independent_gh_check(monkeypatch):
+    """No self-attested vendor success and no silent fallback to unsigned catalog."""
+    def download(key):
+        if key in ("aicr_catalog_sigstore", "aibom_provenance"):
+            return b"fixture-provenance"
+        return _tgz("aicr" if key == "aicr" else "kubectl-aibom")
+    observed=[]
+    def run_required(argv, *, timeout=90):
+        observed.append(list(argv))
+        if argv[1:3] == ["recipe", "verify-catalog"]:
+            assert len(argv) == 4
+            assert Path(argv[3]).read_bytes() == b"fixture-provenance"
+        return {"passed": True, "exit_code": 0, "tool": Path(argv[0]).name}
+    monkeypatch.setattr(native, "download", download)
+    monkeypatch.setattr(native.shutil, "which", lambda _: "/usr/bin/gh")
+    monkeypatch.setattr(native, "run_required", run_required)
+    report=native.execute()
+    assert any(x[1:3] == ["attestation", "verify"] and "--owner" in x and "GoogleCloudPlatform" in x for x in observed)
+    assert any(x[1:3] == ["recipe", "verify-catalog"] and len(x) == 4 for x in observed)
+    assert report["g4_completed"] is False
+    assert report["decision"] == "PAUSE_PRODUCT_BUILD"

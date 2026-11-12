@@ -10,10 +10,10 @@
 | Run provider-native release checks on CPU-only public artifacts | Independently verify Google release provenance with GitHub attestation, invoke NVIDIA's embedded signed-catalog verifier; strict release byte pins | Establishes what upstream tools actually run and what cannot be concluded without live evidence | **Implement once as a bounded preflight** |
 | Compare intent and runtime on a real workload under separate independent trust control | Requires authenticated AICR recipe, matching running AIBOM for the same workload, blinded fault injections, trusted roots/time/checkpoint, measured cluster/GPU cost | Could falsify our H0 of no distinct product | **Blocked** until such evidence exists |
 
-The baseline script runs on an **ordinary GitHub-hosted CPU runner** and downloads only three immutable, SHA-256-pinned release assets from the official GitHub repositories. It rejects binary archive symlinks and unsafe names and extracts a single expected executable to a temporary directory. It checks:
+The baseline script runs on an **ordinary GitHub-hosted CPU runner** and downloads only four immutable, SHA-256-pinned release assets from the official GitHub repositories. It rejects binary archive symlinks and unsafe names and extracts a single expected executable to a temporary directory. It checks:
 
 - `gh attestation verify` on Google's v1.6.2 `kubectl-aibom` Linux archive using Google's published provenance bundle and the independent GitHub CLI's `--owner GoogleCloudPlatform` identity constraint;
-- `aicr recipe verify-catalog` using NVIDIA's **actual v1.2.0 Linux release executable**, after checking the release archive SHA-256 against pinned GitHub release metadata;
+- `aicr recipe verify-catalog <bundle-path>` using NVIDIA's **actual v1.2.0 Linux executable** with its release-published `recipe-catalog.sigstore.json` bundle; both release archive and signature bundle have separately pinned SHA-256;
 - actual `kubectl-aibom --help` invocation (proof the binary runs, not of BOM source verification).
 
 This **does not** verify NVIDIA's release binary's publisher signature; the pinned release checksum is a content identifier, not a standalone authentication mechanism. The AICR embedded catalog test is vendor-native, but it does not validate a deployed workload or signed upstream runtime evidence. Google's release provenance authenticates the published binary artifact, not any particular AIBOM from a cluster.

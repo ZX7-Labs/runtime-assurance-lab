@@ -25,6 +25,11 @@ RELEASES = {
         "max_size": 32_000_000,
         "binary": "aicr",
     },
+    "aicr_catalog_sigstore": {
+        "url": "https://github.com/NVIDIA/aicr/releases/download/v1.2.0/recipe-catalog.sigstore.json",
+        "sha256": "80744565b8d79da72afc0720dc551e9664eb91e1d94da90c1fad1ba65d8802cc",
+        "max_size": 25_000,
+    },
     "aibom": {
         "url": "https://github.com/GoogleCloudPlatform/k8s-aibom/releases/download/v1.6.2/kubectl-aibom_v1.6.2_linux_amd64.tar.gz",
         "sha256": "5a7f7e98e55d59ce3f7e5fa9ce385b544775ddefd32bcdf20b6e9fc234b2a7c0",
@@ -102,6 +107,7 @@ def execute() -> dict:
         work = Path(tmp)
         aicr_tar, google_tar = download("aicr"), download("aibom")
         provenance = download("aibom_provenance")
+        catalog_signature = download("aicr_catalog_sigstore")
         aicr = extract_one_binary(aicr_tar, "aicr", work / "aicr")
         aibom = extract_one_binary(google_tar, "kubectl-aibom", work / "kubectl-aibom")
         archive = work / "kubectl-aibom_v1.6.2_linux_amd64.tar.gz"
@@ -114,12 +120,14 @@ def execute() -> dict:
         if gh is None:
             raise BaselineError("independent gh attestation verifier unavailable")
         provenance_result = run_required([gh, "attestation", "verify", str(archive), "--owner", "GoogleCloudPlatform", "--bundle", str(bundle)])
-        catalog_result = run_required([str(aicr), "recipe", "verify-catalog"])
+        catalog_bundle = work / "recipe-catalog.sigstore.json"
+        catalog_bundle.write_bytes(catalog_signature)
+        catalog_result = run_required([str(aicr), "recipe", "verify-catalog", str(catalog_bundle)])
         google_result = run_required([str(aibom), "--help"])
         return {
             "schema": "g4-vendor-native-public-baseline-v1",
             "source_type": "PUBLIC_SIGNED_VENDOR_RELEASES_NO_RUNTIME_EVIDENCE",
-            "verified_release_shas": {key: RELEASES[key]["sha256"] for key in ("aicr", "aibom", "aibom_provenance")},
+            "verified_release_shas": {key: RELEASES[key]["sha256"] for key in ("aicr", "aicr_catalog_sigstore", "aibom", "aibom_provenance")},
             "google_release_attestation": provenance_result,
             "nvidia_embedded_catalog_verification": catalog_result,
             "google_cli_invocation": google_result,
