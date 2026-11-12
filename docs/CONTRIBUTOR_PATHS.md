@@ -10,7 +10,8 @@ A GPU is **not** required to help. The project's goal is to test whether additio
 | Audit vendor parity | Kubernetes/GPU/platform researchers | One pinned upstream feature, a fair same-input comparator, and a falsifier | [Issue #2](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2) |
 | Challenge trust | AppSec, supply-chain engineers | One source/clock/replay assumption and safe non-sensitive negative control | [Issue #3](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3) |
 | Review real-study protocol | Researchers, potential authorized operators | Critique blinded labels and evidence custody; **no live data in issues** | [Issue #4](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/4) |
-| Packaging portability | Python packaging maintainers | Build and install an isolated wheel/sdist, report install and `ral --help` outcomes | [Issues](https://github.com/ZX7-Labs/runtime-assurance-lab/issues) |
+| Packaging portability | Python packaging maintainers | Build and install an isolated wheel/sdist, report install and `ral --help` outcomes | [Issue #5](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/5) |
+| Audit benchmark claims | Python/data reviewers | Recompute metric denominators and identify any overclaim | [Issue #6](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/6) |
 
 For now, **documentation, reproduction, negative controls and independent review** are higher-value than adding a Kubernetes controller, new storage backend, signing service or detection promise. See the scientific [claims matrix](CLAIMS_AND_BASELINES.md).
 

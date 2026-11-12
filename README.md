@@ -41,6 +41,8 @@ You can contribute **without a GPU, cluster, account credentials or existing acc
 - **Research:** [#2 · try to falsify the standalone-product hypothesis](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2) using real upstream capabilities and **fair same-input controls**.
 - **Security:** [#3 · independently review source authenticity and replay boundaries](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3) (disclose vulnerabilities privately).
 - **Real-world validation:** [#4 · explore an authorized, privacy-safe G4 research partnership](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/4) (do **not** post live data).
+- **Packaging:** [#5 · independently test wheel/sdist and installed CLI](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/5) (no GPU).
+- **Metrics review:** [#6 · verify benchmark definitions and limitations](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/6) (no GPU).
 
 **[Pick a concrete first task](docs/CONTRIBUTOR_PATHS.md)** · [Independent challenge and evidence rubric](research/INDEPENDENT_REVIEW_CHALLENGE.md) · [Reproduction instructions for Linux, macOS and Windows](docs/REPRODUCIBILITY.md).
 

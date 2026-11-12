@@ -11,7 +11,7 @@ Thank you for helping test a hard question: **does a separate cross-plane assura
 
 **No GPU? No problem.** Start with the [portable reproduction guide](docs/REPRODUCIBILITY.md) and [contributor paths](docs/CONTRIBUTOR_PATHS.md). A small, well-documented negative result is preferable to an unscoped feature request.
 
-**Available starting points:** [#1 Portability / quickstart](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/1), [#2 Equal-input upstream research](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2), [#3 Public threat-model review](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3). For a new idea use the issue templates.
+**Available starting points:** [#1 Portability / quickstart](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/1), [#2 Equal-input upstream research](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2), [#3 Public threat-model review](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3), [#5 Wheel/sdist portability](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/5) and [#6 Metric denominator audit](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/6). For a new idea use the issue templates.
 
 **Want a specific, reviewable task?** Start with the [independent verification challenge](research/INDEPENDENT_REVIEW_CHALLENGE.md), including its fair-comparison method, contributor lanes, evidence rubric and safe-data rules. [#4](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/4) is for *potential* real G4 research partners, not public upload of evidence.
 

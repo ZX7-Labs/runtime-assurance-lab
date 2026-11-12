@@ -85,6 +85,6 @@ def test_research_invitation_has_no_product_or_community_claim() -> None:
     assert "Do not buy stars" in text
     assert "No proof of real model execution" in text or "not a claim of product availability" in text
     guide = (ROOT / "docs/CONTRIBUTOR_PATHS.md").read_text(encoding="utf-8")
-    for issue in range(1, 5):
+    for issue in range(1, 7):
         assert f"/issues/{issue}" in guide
     assert "A GPU is **not** required" in guide

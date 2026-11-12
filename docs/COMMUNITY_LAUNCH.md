@@ -8,7 +8,7 @@
 
 Do not call it an AI agent, a production runtime monitor, an NVIDIA/Google partnership, a GPU model execution proof or a verified commercial startup.
 
-**Canonical links:** [repository](https://github.com/ZX7-Labs/runtime-assurance-lab) · [first contribution](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/1) · [vendor parity audit](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2) · [claim matrix](CLAIMS_AND_BASELINES.md) · [reproduction guide](REPRODUCIBILITY.md).
+**Canonical links:** [repository](https://github.com/ZX7-Labs/runtime-assurance-lab) · [first contribution](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/1) · [wheel/sdist check](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/5) · [metrics audit](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/6) · [vendor parity audit](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2) · [claim matrix](CLAIMS_AND_BASELINES.md) · [reproduction guide](REPRODUCIBILITY.md).
 
 ## Posts suitable for adaptation
 
