@@ -4,6 +4,7 @@ import argparse
 from dataclasses import asdict
 from datetime import datetime, timezone
 import json
+import sqlite3
 from pathlib import Path
 import sys
 from .contracts import Intent, Observation, timestamp
@@ -15,6 +16,7 @@ from .aicr_adapter import MAX_RECIPE_BYTES, pin_recipe
 from .json_strict import loads_strict
 from .crossplane_receipt import make_receipt, replay_receipt
 from .source_auth import authenticate_and_evaluate, MAX_TRUST_BYTES, MAX_PROOF_BYTES
+from .checkpoint_store import bootstrap as bootstrap_checkpoint, consume as consume_checkpoint
 
 
 # Bound local inputs: the PoC has no streaming parser or service-level load shedding.
@@ -105,6 +107,21 @@ def main(argv=None) -> int:
     auth.add_argument("--expected-sequence", type=int, required=True)
     auth.add_argument("--expected-prev-head", required=True)
     auth.add_argument("--now", required=True)
+    boot = sub.add_parser("checkpoint-init-offline", help="Explicit operator-only local SQLite bootstrap; save returned state pin OUTSIDE this database")
+    boot.add_argument("--state-db", required=True, type=Path)
+    boot.add_argument("--source-id", required=True)
+    boot.add_argument("--workload", required=True)
+    boot.add_argument("--expected-intent-sha256", required=True)
+    boot.add_argument("--expected-authority-sha256", required=True)
+    durable = sub.add_parser("evaluate-authenticated-stateful", help="Serialize signed-source evaluation with operator-pinned SQLite checkpoint; NOT independent trust")
+    durable.add_argument("--state-db", required=True, type=Path)
+    durable.add_argument("--source-id", required=True)
+    durable.add_argument("--workload", required=True)
+    durable.add_argument("--expected-state-sha256", required=True, help="Independently held checkpoint-state hash; never derive from SQLite")
+    for flag in ("--intent", "--observation", "--attestation", "--authority"):
+        durable.add_argument(flag, required=True, type=Path)
+    for flag in ("--expected-intent-sha256", "--expected-authority-sha256", "--now"):
+        durable.add_argument(flag, required=True)
     a = sub.add_parser("evaluate-aibom", help="Read-only k8s-aibom v1.6.2 CR export; cannot grant verified identity")
     a.add_argument("--intent", required=True, type=Path)
     a.add_argument("--aibom", required=True, type=Path)
@@ -155,6 +172,27 @@ def main(argv=None) -> int:
             )
             result = assessed.to_dict()
             code = 0 if assessed.source_authenticated and assessed.finding.status == "OK" else 2
+        elif args.action == "checkpoint-init-offline":
+            pinned = bootstrap_checkpoint(
+                args.state_db, source_id=args.source_id, workload_id=args.workload,
+                expected_intent_sha256=args.expected_intent_sha256,
+                expected_authority_sha256=args.expected_authority_sha256,
+            )
+            result = {"bootstrapped": True, "state_sha256": pinned,
+                      "warning": "Operator must protect this pin out-of-band and supply it on EVERY consume; DB alone cannot prevent rollback"}
+            code = 0  # successful BOOTSTRAP, not assurance
+        elif args.action == "evaluate-authenticated-stateful":
+            consumed = consume_checkpoint(
+                args.state_db, source_id=args.source_id, workload_id=args.workload,
+                expected_state_sha256=args.expected_state_sha256,
+                expected_intent_sha256=args.expected_intent_sha256,
+                expected_authority_sha256=args.expected_authority_sha256,
+                intent_bytes=read_bytes(args.intent), observation_bytes=read_bytes(args.observation),
+                attestation_bytes=read_bytes(args.attestation, MAX_PROOF_BYTES),
+                authority_bytes=read_bytes(args.authority, MAX_TRUST_BYTES), now=timestamp(args.now),
+            )
+            result = consumed.to_dict()
+            code = 0 if consumed.committed and consumed.assessment.source_authenticated and consumed.assessment.finding.status == "OK" else 2
         elif args.action == "evaluate-aibom":
             intent = Intent.parse(read_json(args.intent))
             adapted = normalize_aibom(read_json(args.aibom))
@@ -214,7 +252,7 @@ def main(argv=None) -> int:
             code = 0
         print(json.dumps(result, sort_keys=True, indent=2))
         return code
-    except (ValueError, KeyError, TypeError, OSError, UnicodeError, RecursionError) as exc:
+    except (ValueError, KeyError, TypeError, OSError, UnicodeError, RecursionError, sqlite3.DatabaseError) as exc:
         print(f"ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)
         return 3
 

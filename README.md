@@ -55,3 +55,15 @@ This is not a Sigstore-compatible signature format. Source-authenticated `OK` in
 The job runs `python -m pytest -q`, compile checks, `python scripts/ci_smoke.py` and `python scripts/check_gates.py`. The smoke executes real Python processes using **synthetic** fixtures, including expected `UNKNOWN` for AIBOM and combined AICR/AIBOM and rejection of a modified signed journal. `check_gates.py` checks **stored historical** synthetic benchmark output; it does not benchmark each runner or prove runtime assurance. A green badge demonstrates the code path on hosted CI, not a GPU/Kubernetes validation.
 
 **Publication authorization:** On 2026-11-12 the user explicitly approved the existing public repository and application of the work. Public repository visibility does **not** grant a reuse/distribution license. This code is an offline, synthetic prototype only; real-cluster data collection, release packaging, paid services and production deployment remain unauthorized.
+
+### M7: transactional checkpoint simulation (offline, NOT externally anchored)
+
+`src/runtime_assurance_lab/checkpoint_store.py` adds a single-host SQLite simulation around the M6 signed-source verifier. An operator must explicitly call `checkpoint-init-offline` on a **new** database with independently verified source/workload, authority SHA-256 and intent SHA-256. The returned full-state `state_sha256` must be protected **outside the SQLite database** and passed on *each* `evaluate-authenticated-stateful` call; the method refuses to infer it or to bootstrap automatically. The stateful command validates the separately supplied digest, then verifies the source/sequence/signature while holding an SQLite write transaction. A signed `OK`, `DRIFT`, `STALE` or `UNKNOWN` result commits source-sequence progress; untrusted input does not. Return code 0 requires a committed authenticated *source assertion* matching intent, not proof of actual GPU execution.
+
+```sh
+PYTHONPATH=src python -m pytest -q tests/test_checkpoint_store.py
+PYTHONPATH=src python scripts/bench_checkpoint_store.py --samples 100 --output results/checkpoint_store_benchmark.json
+PYTHONPATH=src python scripts/ci_smoke.py
+```
+
+Use `python -m runtime_assurance_lab.cli checkpoint-init-offline --help` and `evaluate-authenticated-stateful --help` for the bounded file/independent-pin interface. The paired CLI paths are **not** a replacement for Sigstore, trusted time, an external monotonic key/anchor store, or cluster attestation. Restoring both SQLite **and** the operator's external state hash defeats rollback protection; this is an intentionally tested residual vulnerability. Crash recovery when the local commit precedes durable external pin publication is not automated. G4 remains blocked.

@@ -102,6 +102,26 @@ def main() -> None:
         replay_flags[replay_flags.index("--expected-prev-head") + 1] = authenticated["next_checkpoint"]["last_head"]
         denied = invoke("evaluate-authenticated", *replay_flags, code=2, status="UNKNOWN")
         assert denied["source_authenticated"] is False
+        # Transactional checkpoint experiment: the operator keeps the state pin
+        # out of the database; old pins must not permit repeat consumption.
+        local_db = out / "local-checkpoint.sqlite"
+        boot = invoke("checkpoint-init-offline", "--state-db", local_db,
+                      "--source-id", "ephemeral-ci-collector", "--workload", "lab/demo",
+                      "--expected-authority-sha256", "sha256:" + sha256(authority_bytes).hexdigest(),
+                      "--expected-intent-sha256", "sha256:" + sha256(intent_bytes).hexdigest(), code=0)
+        assert boot["state_sha256"].startswith("sha256:") and boot["bootstrapped"]
+        state_flags = ("--state-db", local_db, "--source-id", "ephemeral-ci-collector",
+                       "--workload", "lab/demo", "--expected-state-sha256", boot["state_sha256"],
+                       "--intent", fixture / "intent.json", "--observation", out / "source.json",
+                       "--authority", out / "authority.json", "--attestation", out / "attestation.json",
+                       "--expected-intent-sha256", "sha256:" + sha256(intent_bytes).hexdigest(),
+                       "--expected-authority-sha256", "sha256:" + sha256(authority_bytes).hexdigest(),
+                       "--now", STAMP)
+        committed = invoke("evaluate-authenticated-stateful", *state_flags, code=0, status="OK")
+        assert committed["checkpoint_committed"] and committed["new_state_sha256"]
+        state_replay = invoke("evaluate-authenticated-stateful", *state_flags, code=2, status="UNKNOWN")
+        assert state_replay["rules"] == ["CHECKPOINT_ANCHOR_MISMATCH"]
+
         # A source-supplied key must not replace an independently pinned root.
         auth_modified = json.loads(authority_bytes)
         auth_modified["workloads"].append("lab/other")
@@ -154,7 +174,7 @@ def main() -> None:
 
     print(json.dumps({
         "offline_smoke": "pass",
-        "cases": ["untrusted-clean-unknown", "untrusted-drift-unknown", "authenticated-signed-ok", "signed-replay-rejected", "self-attested-root-rejected", "stale", "aibom-unknown", "aicr-aibom-unknown", "receipt-replay-and-false-OK-rejected", "same-input-negative-control", "signed-demo", "tamper-rejected"],
+        "cases": ["untrusted-clean-unknown", "untrusted-drift-unknown", "authenticated-signed-ok", "signed-replay-rejected", "self-attested-root-rejected", "stale", "aibom-unknown", "aicr-aibom-unknown", "receipt-replay-and-false-OK-rejected", "same-input-negative-control", "signed-demo", "tamper-rejected", "sqlite-checkpoint-consumed", "sqlite-checkpoint-replay-rejected"],
         "scope": "synthetic CPU-only; no cluster, no anchored trust root",
     }, sort_keys=True))
 

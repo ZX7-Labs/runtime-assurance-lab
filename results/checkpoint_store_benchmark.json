@@ -1,0 +1,11 @@
+{
+  "cpu_ms": 175.245,
+  "max_us": 8410.26,
+  "median_us": 3989.22,
+  "operation": "local SQLite BEGIN IMMEDIATE, source-auth verify, synchronous FULL commit",
+  "p95_us": 5004.478,
+  "p99_us": 6496.049,
+  "samples": 100,
+  "scope": "synthetic local filesystem, sequential, ephemeral signer; NOT live/cluster overhead, external anchoring or crash guarantee",
+  "traced_python_heap_peak_bytes": 54731
+}

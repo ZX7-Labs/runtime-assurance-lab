@@ -359,3 +359,38 @@ The first M6 source publish `16fc4f4` correctly committed the new implementation
 - Created remote tree `235071bfd7644c0de44e3fe328b62770b107110b`; independently fetched and verified **62/62 immutable committed Git blob SHAs equal**, **zero extras/mismatches**. Published GitHub commit `55484bd8cbe3e6318fea6869cb8c716dc79fc67f` by `update_ref(force=false, expected_sha=16fc4f4...)`, returned `success=true`. Re-read `main` and confirmed new commit/tree.
 - Fetched GitHub Actions run [43167932209](https://github.com/ZX7-Labs/runtime-assurance-lab/actions/runs/43167932209), matching `head_sha=55484bd8...`, `status=completed`, `conclusion=success`. Individually retrieved hosted job logs: Python **3.11: 158 passed in 2.20s**, Python **3.13: 158 passed in 2.82s**; both include successful 12-case offline smoke and 7/7 stored pilot gates. No deployment, paid runner, production secrets, independent security review or GPU/cluster resource test.
 - **Final correction status:** M6 source-forgery fail-closed *offline control* and its M1–M5 preserved histories are now published together with full M6 docs. The earlier publication mismatch and repair are explicitly recorded in sections 19–21; neither a tested source assertion nor a hosted CPU CI run proves actual GPU execution. G4/G5 remain blocked as stated. The remaining next action is authorized, independently trusted real AICR/AIBOM evidence and secure monotonic state to test the actual runtime boundary.
+
+## 22. M7 — offline transactional checkpoint harness, local verification (2026-11-12)
+
+**Resumption:** The working `/mnt/data/runtime-assurance-lab` directory contained exported documentation only and had no `.git`; recovered the full 62-file source from the previously verified `runtime-assurance-lab-m6-verified.zip` into a separate working directory, leaving the original documents untouched. GitHub connector independently reported `main=7543b98aeb6de3b246d7c605c5aaeac8a32f2c3f`, 62 tracked files; the recovered `PLAN.md` blob `b63e031c093853b3eca644e824c51cb25cea7111` and `EVIDENCE.md` blob `17746514edbb082f6f7cc0bbffdb1f5e3b08d1fe` matched GitHub. M1–M6 records were preserved. Local baseline: `PYTHONPATH=src python -m pytest -q` -> **158 passed in 23.40s**. The original Git ancestor history is not embedded in the zip, so the recovered research checkout has a separate new local Git baseline, while content identity is grounded in remote Git blobs.
+
+**Milestone choice and comparison:** G4 authentic AICR/AIBOM, cluster, independently administered monotonic store and key policies remain blocked. The next offline-falsifiable gap was M6's operator-supplied checkpoint progress not being transactionally stored. Compared A) operator-pinned local SQLite transactions vs B) externally administered CAS/transparency checkpoint service; implemented A as a **local simulation only**, not a trusted key root. See `PLAN.md` and `SECURITY_REVIEW.md` S-022–S-024.
+
+**Files created:** `src/runtime_assurance_lab/checkpoint_store.py`, `tests/test_checkpoint_store.py`, `scripts/bench_checkpoint_store.py`, `results/checkpoint_store_benchmark.json`. **Files modified:** `src/runtime_assurance_lab/cli.py`, `scripts/ci_smoke.py`, `AGENTS.md`, `DECISIONS.md`, `PLAN.md`, `README.md`, `SECURITY_REVIEW.md`, `EVIDENCE.md`. No third-party source code or new package dependency was added. Changes are offline and CPU-only.
+
+**Observed implement → fail → fix → retest sequence:**
+
+```text
+Initial recovered M6 baseline: 158 passed in 23.40s.
+Initial M7 target: 1 failed, 12 passed — corrupt SQLite state triggered an uncaught genesis/sequence ValueError.
+Fix: convert malformed state to UNKNOWN/CHECKPOINT_STATE_INVALID; explicitly close connections.
+Retest M7 target: 13 passed.
+One combined full-test-plus-smoke invocation timed out after pytest had passed its intermediate progress; no passing smoke result was inferred.
+Independent full pytest retry: 171 passed in 21.59s.
+After simulated SQLite commit failure, negative-control rollback and permission cases: 17 targeted tests passed.
+After broken-database CLI error handling: 18 targeted tests passed.
+Final full local pytest: 176 passed in 22.33s.
+PYTHONPATH=src python scripts/ci_smoke.py -> PASS 14 named synthetic subprocess scenarios (run separately).
+python scripts/check_gates.py -> passed=true, 7/7 HISTORICAL stored synthetic pilot gates; not M7 performance or G4 evidence.
+python -m compileall -q src tests scripts -> PASS.
+python -m pip check -> existing unrelated moviepy/Pillow dependency conflict; not fixed via repo changes.
+git diff --check -> PASS.
+```
+
+**Adversarial and recovery tests:** valid synthetic detached signer + pins, second sequence/restart, replay using old source or old state pin, forged signature no checkpoint burn, incorrect intent/trust pins, tampered checkpoint fields and dropped database schema, nonexistent DB, symlink, concurrent same-sequence write attempts (exactly one committed), signed `DRIFT` advancing sequence without `OK`, simulated commit failure, and restored old DB with a *separately retained new pin* rejected. Crucially a **negative-control** test restores BOTH DB and the operator's external pin and observes accepted replay: this demonstrates the remaining high-severity trust gap, not a security pass. A trusted clock/source's physical runtime assertions and authentic upstream identities were NOT exercised.
+
+**Local processing baseline:** `PYTHONPATH=src python scripts/bench_checkpoint_store.py --samples 100 --output results/checkpoint_store_benchmark.json`. Repeated sequential signed synthetic events, ephemeral signer, SQLite `BEGIN IMMEDIATE`, synchronous FULL local commit. Median **3,989.220 µs**, p95 **5,004.478 µs**, p99 **6,496.049 µs**, max **8,410.260 µs**; process CPU **175.245 ms**; Python traced heap peak **54,731 bytes**. This adds local disk transactions to cryptography, so do NOT compare its time directly with the earlier in-memory signing-only measurement. Excludes any Kubernetes polling, network, GPU, externally anchored trust, and realistic crash recovery.
+
+**Unresolved findings:** operator's state hash, trust and intent pins MUST be held separately; if attacker can roll back the DB AND external pin, replay succeeds. SQLite cannot create independent truth. Crash between DB commit and external pin protection may cause an availability dead-end with no safe automatic rebootstrap. No production multi-process/distributed durability SLA, independent security auditor, key revocation/rotation, trusted-time service, real model-execution attestation, source-specific Sigstore/AICR verification, customer value or G4 test environment. The stateless M6 `evaluate-authenticated` command remains available and must not be treated as durable replay enforcement. No external spending, secrets, production deployment or release.
+
+**Publication next:** publish the tested immutable Git object contents to the previously authorized public `ZX7-Labs/runtime-assurance-lab` without force, validate all remote blob hashes, then verify Python 3.11 and 3.13 GitHub-hosted CI and append exact run IDs/statuses in this ledger. G4/G5 remain blocked, with next real action being authorized independently anchored monotonic service plus authentic AICR/AIBOM evidence and scoped cluster read-only validation.
