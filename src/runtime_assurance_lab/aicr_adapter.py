@@ -87,8 +87,25 @@ def pin_recipe(raw: bytes, expected_digest: str, intent: Intent) -> PinnedRecipe
     for c in components:
         if not isinstance(c, dict):
             raise ValueError("AICR componentRef must be object")
-        for field in ("name", "source", "type"):
+        for field in ("name", "type"):
             string(c.get(field), f"componentRefs.{field}")
+        # Official AICR v1.2.0 RecipeResult testdata permits source="" for
+        # local components carrying manifestFiles. The upstream JSON Schema
+        # requires `source` to be a *string*, not a nonempty string. Preserve
+        # fail-closed semantics for absent source or empty sources without
+        # independently identified local manifests.
+        source = c.get("source")
+        if type(source) is not str:
+            raise ValueError("componentRefs.source must be a string")
+        if source:
+            string(source, "componentRefs.source")
+        else:
+            manifests = c.get("manifestFiles")
+            if (type(manifests) is not list or not manifests or len(manifests) > MAX_COMPONENTS or
+                    any(type(path) is not str or not path.strip() or len(path) > 500 for path in manifests)):
+                raise ValueError("empty source requires explicit bounded local manifestFiles")
+            if "AICR_LOCAL_MANIFEST_SOURCE_UNATTESTED" not in limitations:
+                limitations.append("AICR_LOCAL_MANIFEST_SOURCE_UNATTESTED")
         names.append(c["name"])
     if len(names) != len(set(names)):
         raise ValueError("duplicate AICR componentRef names")

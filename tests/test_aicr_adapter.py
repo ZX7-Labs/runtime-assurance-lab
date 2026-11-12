@@ -127,3 +127,26 @@ def test_cli_tampered_recipe_returns_invalid_without_decision(tmp_path):
     assert p.returncode == 3
     assert not p.stdout
     assert 'pinned digest' in p.stderr
+
+
+
+def test_upstream_compatible_empty_source_with_local_manifest_keeps_trust_limit():
+    """The pinned NVIDIA v1.2.0 repo carries legitimate local manifests."""
+    data = deepcopy(RAW)
+    comp = data['componentRefs'][0]
+    comp['source'] = ''
+    comp['manifestFiles'] = ['components/custom/manifests/local.yaml']
+    result = _pin_invalid(json.dumps(data).encode())
+    assert result.component_names == ('gpu-operator',)
+    assert 'AICR_LOCAL_MANIFEST_SOURCE_UNATTESTED' in result.limitations
+    assert 'AICR_RECIPE_NOT_ATTESTED' in result.limitations
+
+
+@pytest.mark.parametrize('manifest', [None, [], 'not-a-list', [123], [''], ['  '], ['x' * 501]])
+def test_empty_source_without_valid_local_manifest_fails(manifest):
+    data = deepcopy(RAW)
+    data['componentRefs'][0]['source'] = ''
+    if manifest is not None:
+        data['componentRefs'][0]['manifestFiles'] = manifest
+    with pytest.raises(ValueError, match='local manifestFiles'):
+        _pin_invalid(json.dumps(data).encode())
