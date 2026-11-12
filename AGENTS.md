@@ -8,3 +8,5 @@
 - Do not copy upstream controller, Sigstore, or policy-engine implementations. Check upstream documentation/licenses before adding dependencies. No repository-wide license selected for this public research prototype; public visibility alone is not an open-source license.
 - Reproduce: `PYTHONPATH=src pytest -q`; `PYTHONPATH=src python -m runtime_assurance_lab.cli demo`; `PYTHONPATH=src python -m runtime_assurance_lab.cli benchmark`.
 - Stop if cross-plane use case is upstream-complete or meaningful real-world differentiation cannot be demonstrated with authorized, non-sensitive evidence. Do not claim production readiness or a market fit.
+
+- M6 provenance gate: never authorize `OK` from unsigned raw observation, AIBOM CR, recipe pin, self-attested root or journal signature. `evaluate-authenticated` requires independently pinned authority/intent digests and trusted monotonic checkpoint/clock; no literal `trusted=True` bypass. Keep policy v2 and scoped synthetic claims explicit. An authorized signer may still assert false runtime facts; block G4/G5 production claims. Preserve historical M1–M5 records as historical.

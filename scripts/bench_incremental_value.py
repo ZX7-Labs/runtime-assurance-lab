@@ -16,7 +16,7 @@ import time
 from typing import Literal
 
 from runtime_assurance_lab.contracts import Intent, Observation
-from runtime_assurance_lab.evaluate import evaluate, naive_baseline
+from runtime_assurance_lab.evaluate import evaluate, _evaluate_authenticated_claims, naive_baseline
 
 UTC_NOW = datetime(2026, 11, 12, 3, 25, tzinfo=timezone.utc)
 Truth = Literal["clean", "drift"]
@@ -105,7 +105,7 @@ def study(trials: int = 50, *, measure_speed: bool = True) -> dict:
               "complete_input_reference_disagreements": 0, "naive_false_ok": 0}
     breakdown: dict[str, dict[str, object]] = {}
     for case in rows:
-        verdict = evaluate(case.intent, case.observation, now=UTC_NOW).status
+        verdict = _evaluate_authenticated_claims(case.intent, case.observation, now=UTC_NOW).status
         baseline = independent_complete_input_comparator(case.intent, case.observation, now=UTC_NOW)
         naive = naive_baseline(case.intent, case.observation, now=UTC_NOW).status
         entry = breakdown.setdefault(case.scenario, {"truth": case.truth, "fully_observable": case.fully_observable,
@@ -127,12 +127,12 @@ def study(trials: int = 50, *, measure_speed: bool = True) -> dict:
     spoofed_observation = example.observation
     assert spoofed_observation is not None
     spoofed_claim_status = evaluate(example.intent, spoofed_observation, now=UTC_NOW).status
-    assert spoofed_claim_status == "OK"  # known missing independent attestation, NOT a passing security gate
+    assert spoofed_claim_status == "UNKNOWN"  # fail-closed untrusted public entrypoint
 
     results = {
-        "scope": "deterministic synthetic negative controls; not actual NVIDIA/Google/Sigstore performance",
-        "definition": "DRIFT is a reported mismatch, NOT proof of malicious or executed runtime drift",
-        "complete_claim_definition": "Fully observable in this study means fresh, complete *synthetic* claims with a verified label; no source authentication or model-execution proof was performed",
+        "scope": "HISTORICAL CLAIM-ONLY deterministic synthetic negative controls; public evaluate() now fails closed; not actual NVIDIA/Google/Sigstore performance",
+        "definition": "HISTORICAL CLAIM-ONLY policy comparison. DRIFT is a reported mismatch, NOT proof of malicious or executed runtime drift",
+        "complete_claim_definition": "HISTORICAL CLAIM-ONLY comparator; fresh, complete synthetic claims with a verified label. NOT source-authenticated or model-execution evidence",
         "sample_limitation": "Trial repetitions change workload identifiers, not underlying conditions; this is NOT a statistically representative workload distribution",
         "timing_method": "five ordered rounds of preloaded same-process calls via perf_counter_ns, no traced heap; no file I/O, Kubernetes, or GPU",
         "truth_source": "predefined synthetic scenario construction (not a tool result)",
@@ -147,9 +147,9 @@ def study(trials: int = 50, *, measure_speed: bool = True) -> dict:
         "source_forgery_probe": {
             "assumed_hidden_truth": "drift despite counterfeit complete matching observation",
             "reported_status": spoofed_claim_status,
-            "unsafe_ok_possible_when_input_source_is_untrusted": True,
-            "security_gate_passed": False,
-            "root_cause": "verified is a caller-provided claim, not independently authenticated provenance",
+            "unsafe_ok_possible_when_input_source_is_untrusted": False,
+            "security_gate_passed": True,
+            "root_cause": "original v1 policy trusted the caller-provided verified label; public evaluate now refuses unpinned untrusted sources",
         },
         "interpretation": {
             "upstream_tools_executed": False,
@@ -161,7 +161,7 @@ def study(trials: int = 50, *, measure_speed: bool = True) -> dict:
     }
     if measure_speed:
         results["local_preloaded_processing_p95_us"] = {
-            "evaluator": _p95_micros(evaluate, rows),
+            "claim_only_comparator": _p95_micros(_evaluate_authenticated_claims, rows),
             "same_input_reference": _p95_micros(independent_complete_input_comparator, rows),
         }
     return results

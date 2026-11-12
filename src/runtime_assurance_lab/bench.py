@@ -12,7 +12,7 @@ import statistics
 import time
 import tracemalloc
 from .contracts import Intent, Observation
-from .evaluate import evaluate, naive_baseline
+from .evaluate import evaluate, _evaluate_authenticated_claims, naive_baseline
 from .evidence import append, generate_signer, head, verify, verify_decision_semantics, canonical, sha
 
 FIXED_NOW = datetime(2026, 11, 12, 3, 25, tzinfo=timezone.utc)
@@ -144,9 +144,9 @@ def run(repetitions: int = 70, loops: int = 5) -> dict:
     rows = list(dataset(repetitions))
     # Benchmark order is documented; run an opposite-order replicate for regression follow-up.
     naive = microbench(rows, naive_baseline, loops)
-    proposed = microbench(rows, evaluate, loops)
+    proposed = microbench(rows, _evaluate_authenticated_claims, loops)
     c1 = classification(rows, naive_baseline)
-    c2 = classification(rows, evaluate)
+    c2 = classification(rows, _evaluate_authenticated_claims)
     return {"experiment": "offline-synthetic-v1", "fixed_now": FIXED_NOW.isoformat(),
             "sample_size": len(rows), "class_balance": {"clean": repetitions, "needs_attention": len(rows)-repetitions},
             "definitions": {"positive": "intentionally mutated or unverified scenario; UNKNOWN/STALE/DRIFT all count as needs-attention",
@@ -155,7 +155,9 @@ def run(repetitions: int = 70, loops: int = 5) -> dict:
                             "cpu": "process CPU time in an in-process Python microbenchmark",
                             "memory": "peak traced Python heap allocations; not pod RSS or cluster overhead"},
             "naive_local_comparator": {"classification": c1, "microbench": naive},
-            "proposed": {"classification": c2, "microbench": proposed},
+            "proposed": {"classification": c2, "microbench": proposed,
+                         "scope": "HISTORICAL CLAIM-ONLY COMPARATOR, NOT THE AUTHENTICATED EVALUATOR"},
+            "security_warning": "This old classification benchmark lacks source authentication; evaluate() now fails closed. Use signed-source tests for authenticated OK.",
             "crypto": crypto_bench(),
             "synthetic_event_to_verdict": pipeline_bench(),
             "upstream_live_comparison_executed": False}

@@ -28,9 +28,9 @@ def test_synthetic_negative_controls_expose_coverage_not_novelty():
     assert 0 < report["metrics"]["overall_latent_drift_recall"] < 1
     assert n["naive_false_ok"] > 0
     assert report["interpretation"]["product_differentiation_proven"] is False
-    assert report["source_forgery_probe"]["unsafe_ok_possible_when_input_source_is_untrusted"]
-    assert report["source_forgery_probe"]["reported_status"] == "OK"
-    assert report["source_forgery_probe"]["security_gate_passed"] is False
+    assert not report["source_forgery_probe"]["unsafe_ok_possible_when_input_source_is_untrusted"]
+    assert report["source_forgery_probe"]["reported_status"] == "UNKNOWN"
+    assert report["source_forgery_probe"]["security_gate_passed"] is True
 
 
 def test_freshness_masks_hidden_drift_and_returns_needs_review():

@@ -14,6 +14,7 @@ from .aibom_adapter import normalize_aibom
 from .aicr_adapter import MAX_RECIPE_BYTES, pin_recipe
 from .json_strict import loads_strict
 from .crossplane_receipt import make_receipt, replay_receipt
+from .source_auth import authenticate_and_evaluate, MAX_TRUST_BYTES, MAX_PROOF_BYTES
 
 
 # Bound local inputs: the PoC has no streaming parser or service-level load shedding.
@@ -94,6 +95,16 @@ def main(argv=None) -> int:
     q.add_argument("--intent", required=True, type=Path)
     q.add_argument("--observation", required=True, type=Path)
     q.add_argument("--now", required=True, help="timezone-aware ISO-8601")
+    auth = sub.add_parser("evaluate-authenticated", help="Offline source signature verification with independent authority/intent/sequence/head pins")
+    auth.add_argument("--intent", required=True, type=Path)
+    auth.add_argument("--observation", required=True, type=Path)
+    auth.add_argument("--attestation", required=True, type=Path)
+    auth.add_argument("--authority", required=True, type=Path)
+    auth.add_argument("--expected-intent-sha256", required=True)
+    auth.add_argument("--expected-authority-sha256", required=True)
+    auth.add_argument("--expected-sequence", type=int, required=True)
+    auth.add_argument("--expected-prev-head", required=True)
+    auth.add_argument("--now", required=True)
     a = sub.add_parser("evaluate-aibom", help="Read-only k8s-aibom v1.6.2 CR export; cannot grant verified identity")
     a.add_argument("--intent", required=True, type=Path)
     a.add_argument("--aibom", required=True, type=Path)
@@ -131,6 +142,19 @@ def main(argv=None) -> int:
             _, _, decision = evaluation(args.intent, args.observation, datetime.fromisoformat(args.now.replace("Z", "+00:00")))
             result = decision.to_dict()
             code = 0 if decision.status == "OK" else 2
+        elif args.action == "evaluate-authenticated":
+            assessed = authenticate_and_evaluate(
+                intent_bytes=read_bytes(args.intent), observation_bytes=read_bytes(args.observation),
+                attestation_bytes=read_bytes(args.attestation, MAX_PROOF_BYTES),
+                authority_bytes=read_bytes(args.authority, MAX_TRUST_BYTES),
+                expected_intent_sha256=args.expected_intent_sha256,
+                expected_authority_sha256=args.expected_authority_sha256,
+                expected_sequence=args.expected_sequence,
+                expected_prev_head=args.expected_prev_head,
+                now=timestamp(args.now),
+            )
+            result = assessed.to_dict()
+            code = 0 if assessed.source_authenticated and assessed.finding.status == "OK" else 2
         elif args.action == "evaluate-aibom":
             intent = Intent.parse(read_json(args.intent))
             adapted = normalize_aibom(read_json(args.aibom))

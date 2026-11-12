@@ -6,6 +6,12 @@ externally secured. This tests exit codes + fail-closed semantics, not real AI e
 from __future__ import annotations
 
 import json
+import base64
+from hashlib import sha256
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives import serialization
+from runtime_assurance_lab.evidence import canonical
+from runtime_assurance_lab.source_auth import DOMAIN, PROOF_SCHEMA, TRUST_SCHEMA, GENESIS_HEAD
 from pathlib import Path
 import subprocess
 import sys
@@ -37,9 +43,9 @@ def invoke(*args: object, code: int, status: str | None = None) -> dict:
 def main() -> None:
     fixture = ROOT / "fixtures"
     flags = ("--intent", fixture / "intent.json", "--now", STAMP)
-    assert invoke("evaluate", *flags, "--observation", fixture / "clean.json", code=0, status="OK")["rules"] == []
-    drift = invoke("evaluate", *flags, "--observation", fixture / "model-drift.json", code=2, status="DRIFT")
-    assert "MODEL_DIGEST_MISMATCH" in drift["rules"]
+    assert invoke("evaluate", *flags, "--observation", fixture / "clean.json", code=2, status="UNKNOWN")["rules"] == ["SOURCE_AUTHENTICITY_UNVERIFIED"]
+    drift = invoke("evaluate", *flags, "--observation", fixture / "model-drift.json", code=2, status="UNKNOWN")
+    assert "SOURCE_AUTHENTICITY_UNVERIFIED" in drift["rules"]
     invoke("evaluate", *flags, "--observation", fixture / "stale.json", code=2, status="STALE")
     aibom = invoke(
         "evaluate-aibom", *flags, "--aibom", fixture / "aibom-v1beta1-synthetic.json", code=2, status="UNKNOWN"
@@ -64,6 +70,45 @@ def main() -> None:
         verify_args = ("--trust", out / "trust-public.json", "--checkpoint", out / "checkpoint.json")
         good = invoke("verify", "--journal", out / "journal.json", *verify_args, code=0)
         assert good == {"verified": True, "reason": "DECISIONS_RECOMPUTED"}
+        # Offline signed-source control with pinned authority/intent digests and
+        # an externally supplied genesis checkpoint (synthetic, NOT external trust).
+        key = Ed25519PrivateKey.generate()
+        public = key.public_key().public_bytes(serialization.Encoding.Raw, serialization.PublicFormat.Raw)
+        observation = json.loads((fixture / "clean.json").read_bytes())
+        observation["source"] = "ephemeral-ci-collector"
+        observation_bytes = canonical(observation)
+        intent_bytes = (fixture / "intent.json").read_bytes()
+        authority_bytes = canonical({"schema": TRUST_SCHEMA, "source_id": "ephemeral-ci-collector",
+                                     "key_id": "ci-only-key", "public_key_ed25519": base64.b64encode(public).decode(),
+                                     "workloads": ["lab/demo"]})
+        signature_content = {"schema": PROOF_SCHEMA, "domain": DOMAIN, "source_id": observation["source"],
+                             "key_id": "ci-only-key", "sequence": 1, "prev_head": GENESIS_HEAD,
+                             "observation_sha256": "sha256:" + sha256(observation_bytes).hexdigest(),
+                             "workload": observation["workload"], "observed_at": observation["observed_at"]}
+        attestation_bytes = canonical({**signature_content,
+            "signature": base64.b64encode(key.sign(canonical(signature_content))).decode()})
+        (out / "source.json").write_bytes(observation_bytes)
+        (out / "authority.json").write_bytes(authority_bytes)
+        (out / "attestation.json").write_bytes(attestation_bytes)
+        auth_flags = ("--intent", fixture / "intent.json", "--observation", out / "source.json",
+                      "--authority", out / "authority.json", "--attestation", out / "attestation.json",
+                      "--expected-intent-sha256", "sha256:" + sha256(intent_bytes).hexdigest(),
+                      "--expected-authority-sha256", "sha256:" + sha256(authority_bytes).hexdigest(),
+                      "--expected-sequence", "1", "--expected-prev-head", GENESIS_HEAD, "--now", STAMP)
+        authenticated = invoke("evaluate-authenticated", *auth_flags, code=0, status="OK")
+        assert authenticated["source_authenticated"] and authenticated["next_checkpoint"]["next_sequence"] == 2
+        replay_flags = list(auth_flags)
+        replay_flags[replay_flags.index("--expected-sequence") + 1] = "2"
+        replay_flags[replay_flags.index("--expected-prev-head") + 1] = authenticated["next_checkpoint"]["last_head"]
+        denied = invoke("evaluate-authenticated", *replay_flags, code=2, status="UNKNOWN")
+        assert denied["source_authenticated"] is False
+        # A source-supplied key must not replace an independently pinned root.
+        auth_modified = json.loads(authority_bytes)
+        auth_modified["workloads"].append("lab/other")
+        (out / "authority.json").write_bytes(canonical(auth_modified))
+        substituted = invoke("evaluate-authenticated", *auth_flags, code=2, status="UNKNOWN")
+        assert substituted["rules"] == ["TRUST_ROOT_NOT_ANCHORED"]
+
         # Independent raw-source replay of a cross-plane receipt; no upstream attestation.
         receipt = out / "crossplane-receipt.json"
         receipt_flags = (
@@ -97,8 +142,8 @@ def main() -> None:
         assert measured["counts"]["unsupported_ok"] == 0
         assert measured["metrics"]["overall_latent_drift_recall"] < 1
         assert measured["interpretation"]["product_differentiation_proven"] is False
-        assert measured["source_forgery_probe"]["unsafe_ok_possible_when_input_source_is_untrusted"]
-        assert measured["source_forgery_probe"]["security_gate_passed"] is False
+        assert not measured["source_forgery_probe"]["unsafe_ok_possible_when_input_source_is_untrusted"]
+        assert measured["source_forgery_probe"]["security_gate_passed"] is True
 
         records = json.loads((out / "journal.json").read_text(encoding="utf-8"))
         records[1]["payload"]["model_digest"] = "sha256:" + "0" * 64
@@ -109,7 +154,7 @@ def main() -> None:
 
     print(json.dumps({
         "offline_smoke": "pass",
-        "cases": ["clean", "drift", "stale", "aibom-unknown", "aicr-aibom-unknown", "receipt-replay-and-false-OK-rejected", "same-input-negative-control", "signed-demo", "tamper-rejected"],
+        "cases": ["untrusted-clean-unknown", "untrusted-drift-unknown", "authenticated-signed-ok", "signed-replay-rejected", "self-attested-root-rejected", "stale", "aibom-unknown", "aicr-aibom-unknown", "receipt-replay-and-false-OK-rejected", "same-input-negative-control", "signed-demo", "tamper-rejected"],
         "scope": "synthetic CPU-only; no cluster, no anchored trust root",
     }, sort_keys=True))
 

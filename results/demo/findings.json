@@ -2,25 +2,27 @@
   {
     "evaluated_at": "2026-11-12T03:25:00+00:00",
     "fixture": "clean",
-    "policy_version": "ral-intent-observation-v1",
-    "rules": [],
-    "status": "OK",
+    "policy_version": "ral-intent-observation-v2-provenance-gate",
+    "rules": [
+      "SOURCE_AUTHENTICITY_UNVERIFIED"
+    ],
+    "status": "UNKNOWN",
     "workload": "lab/demo"
   },
   {
     "evaluated_at": "2026-11-12T03:25:00+00:00",
     "fixture": "model-drift",
-    "policy_version": "ral-intent-observation-v1",
+    "policy_version": "ral-intent-observation-v2-provenance-gate",
     "rules": [
-      "MODEL_DIGEST_MISMATCH"
+      "SOURCE_AUTHENTICITY_UNVERIFIED"
     ],
-    "status": "DRIFT",
+    "status": "UNKNOWN",
     "workload": "lab/demo"
   },
   {
     "evaluated_at": "2026-11-12T03:25:00+00:00",
     "fixture": "stale",
-    "policy_version": "ral-intent-observation-v1",
+    "policy_version": "ral-intent-observation-v2-provenance-gate",
     "rules": [
       "EVIDENCE_EXPIRED"
     ],
@@ -30,7 +32,7 @@
   {
     "evaluated_at": "2026-11-12T03:25:00+00:00",
     "fixture": "unverified",
-    "policy_version": "ral-intent-observation-v1",
+    "policy_version": "ral-intent-observation-v2-provenance-gate",
     "rules": [
       "MODEL_NOT_CRYPTO_VERIFIED"
     ],
@@ -40,7 +42,7 @@
   {
     "evaluated_at": "2026-11-12T03:25:00+00:00",
     "fixture": "missing",
-    "policy_version": "ral-intent-observation-v1",
+    "policy_version": "ral-intent-observation-v2-provenance-gate",
     "rules": [
       "OBSERVATION_MISSING"
     ],
@@ -50,21 +52,21 @@
   {
     "evaluated_at": "2026-11-12T03:25:00+00:00",
     "fixture": "image-drift",
-    "policy_version": "ral-intent-observation-v1",
+    "policy_version": "ral-intent-observation-v2-provenance-gate",
     "rules": [
-      "IMAGE_DIGEST_MISMATCH"
+      "SOURCE_AUTHENTICITY_UNVERIFIED"
     ],
-    "status": "DRIFT",
+    "status": "UNKNOWN",
     "workload": "lab/demo"
   },
   {
     "evaluated_at": "2026-11-12T03:25:00+00:00",
     "fixture": "platform-drift",
-    "policy_version": "ral-intent-observation-v1",
+    "policy_version": "ral-intent-observation-v2-provenance-gate",
     "rules": [
-      "PLATFORM_RECIPE_DIGEST_MISMATCH"
+      "SOURCE_AUTHENTICITY_UNVERIFIED"
     ],
-    "status": "DRIFT",
+    "status": "UNKNOWN",
     "workload": "lab/demo"
   }
 ]

@@ -1,12 +1,12 @@
-"""Offline correlation rules. Integrity verification is a separate precondition."""
+"""Offline correlation rules. Unauthenticated sources must never issue assurance OK."""
 from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 from .contracts import Finding, Intent, Observation
 
-POLICY_VERSION = "ral-intent-observation-v1"
+POLICY_VERSION = "ral-intent-observation-v2-provenance-gate"
 
 
-def evaluate(intent: Intent, observation: Observation | None, *, now: datetime,
+def _evaluate_authenticated_claims(intent: Intent, observation: Observation | None, *, now: datetime,
              max_age_seconds: int = 300, allowed_clock_skew_seconds: int = 30) -> Finding:
     if now.tzinfo is None or now.utcoffset() is None:
         raise ValueError("now requires timezone")
@@ -38,6 +38,24 @@ def evaluate(intent: Intent, observation: Observation | None, *, now: datetime,
     if unknown:
         return Finding(intent.workload, "UNKNOWN", tuple(sorted(unknown)))
     return Finding(intent.workload, "OK", ())
+
+
+def evaluate(intent: Intent, observation: Observation | None, *, now: datetime,
+             max_age_seconds: int = 300, allowed_clock_skew_seconds: int = 30) -> Finding:
+    """Untrusted observation path: never confirm OK or drift from self-asserted data.
+
+    Only authenticate_and_evaluate() in source_auth verifies an independent
+    trust root, signed bytes and externally held replay anchor before using
+    the private comparison rules. Do not add a caller-set trusted=True flag.
+    """
+    # Let the policy check clock and freshness even for untrusted input;
+    # no source assertion is promoted to authenticated OK or DRIFT.
+    claim = _evaluate_authenticated_claims(intent, observation, now=now,
+                        max_age_seconds=max_age_seconds,
+                        allowed_clock_skew_seconds=allowed_clock_skew_seconds)
+    if claim.status in ("OK", "DRIFT"):
+        return Finding(intent.workload, "UNKNOWN", ("SOURCE_AUTHENTICITY_UNVERIFIED",))
+    return claim
 
 
 def naive_baseline(intent: Intent, observation: Observation | None, **_: object) -> Finding:

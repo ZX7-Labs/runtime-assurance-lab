@@ -33,10 +33,11 @@ def test_cli_end_to_end_and_tampering(tmp_path):
 
 def test_cli_nonconformance_exit(tmp_path):
     clean=invoke('evaluate','--intent',ROOT/'fixtures/intent.json','--observation',ROOT/'fixtures/clean.json','--now','2026-11-12T03:25:00Z')
-    assert clean.returncode==0,clean.stderr
+    assert clean.returncode==2,clean.stderr
+    assert "SOURCE_AUTHENTICITY_UNVERIFIED" in clean.stdout
     mismatch=invoke('evaluate','--intent',ROOT/'fixtures/intent.json','--observation',ROOT/'fixtures/model-drift.json','--now','2026-11-12T03:25:00Z')
     assert mismatch.returncode==2
-    assert 'MODEL_DIGEST_MISMATCH' in mismatch.stdout
+    assert 'SOURCE_AUTHENTICITY_UNVERIFIED' in mismatch.stdout
 
 
 def test_synthetic_quality_and_benchmark_smoke():

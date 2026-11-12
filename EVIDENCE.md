@@ -285,3 +285,52 @@ python3 -m compileall -q src tests scripts
 **Hosted CI, actual observed result:** Connected GitHub workflow run [43162008548](https://github.com/ZX7-Labs/runtime-assurance-lab/actions/runs/43162008548), `head_sha=eefecedb98aae3a02b3a824640b8d47bea232f58`, status **completed**, conclusion **success**. Independently queried its jobs: **Python 3.11** and **Python 3.13** both completed **success**, including installation, unit/integration/adversarial/synthetic performance tests, module compilation, 9 offline process smoke scenarios, and stored historical synthetic gate validation. The same 127-test suite was already run locally. CI is CPU-only synthetic validation, NOT GPU/Kubernetes runtime or cryptographic source authenticity.
 
 **Unchanged limitations:** The source-forgery probe still demonstrates an unsafe `OK` on counterfeit complete observations, so production assurance is blocked even though CI is green. The 100% condition-visible synthetic drift recall and 57.14% latent drift recall do NOT prove real-world detection accuracy. Same-input negative-control parity rules out claiming algorithmic novelty from the constructed fixture study. G4 authentic origin and representative tool comparisons, third-party review, real Kubernetes/GPU metrics, and G5 market/license choices remain unresolved. No release readiness or commercialization evidence established.
+
+## 17. M6 — fail-closed source-forgery containment, independent-pin prototype (2026-11-12)
+
+**Resume:** Re-read local `PLAN.md`, `EVIDENCE.md`, `SECURITY_REVIEW.md`, evaluator, contracts, cryptographic evidence journal, AICR/AIBOM adapters, raw cross-plane receipt, benchmark and tests. Local head before work `5c739ee68285a22edab1e419856cf5fc65d0c9fd`, branch `main`. `PUBLISH_PROBE.md` was already untracked and was left untouched; it is not a deliverable. Last verified GitHub head before work `c23a7ea8b7060f381631f53a0cca252ff640d8d1`; prior hosted CI had Python 3.11/3.13 `127 passed` each. No cluster, GPU, Docker, authentic upstream signed evidence, independent security reviewer or authorized credentials available. Baseline local `PYTHONPATH=src python3 -m pytest -q`: **127 passed in 13.74 s**.
+
+**Attack reproduction before the fix (RED / known M5 S-018):** parsed `fixtures/intent.json` and `fixtures/clean.json`, created a complete normalized observation claiming `model_confidence="verified"` (the attacker can hide different actual runtime state), called `evaluate(..., now=2026-11-12T03:25:00Z)` and observed `{'workload':'lab/demo','status':'OK','rules':[]}`. Root cause: no independent source-origin/key/attestation gate; the `verified` label is input data. Signed hash-chain journal and replay receipts were not a source-authenticity verification mechanism.
+
+**Alternatives:** Compared (A) bounded source-bound offline verifier with independently pinned root/intent and external monotonic checkpoint, versus (B) real Sigstore/DSSE and independently anchored transparency checkpoint under authorized upstream identity policy. See `PLAN.md` M6. Selected A for **offline containment only**; B needs external trust/cluster evidence and remains G4. No new dependency, hosted CA, Kubernetes controller, deployment or signing service.
+
+**Implementation:**
+
+- `src/runtime_assurance_lab/evaluate.py`: untrusted public evaluator fails closed as `UNKNOWN/SOURCE_AUTHENTICITY_UNVERIFIED` instead of claiming `OK` or authenticated `DRIFT`; old comparison retained as **internal claim-only research** helper; freshness/missing/unknown semantics preserved. Breaking policy identifier bumped to `ral-intent-observation-v2-provenance-gate`.
+- New `src/runtime_assurance_lab/source_auth.py`: strict bounded schema and JSON; independently supplied exact intent SHA-256, authority manifest SHA-256, current clock and monotonic `(expected_sequence, expected_prev_head)`; allowlisted source/key/workload binding, Ed25519 signature over domain-separated envelope, SHA-256 of **original observation bytes**, signed timestamp and external clock constraints; no genesis reuse for noninitial sequence; only verified signer emits signed-source `OK/DRIFT` and a **proposed** next checkpoint. Does not persist/publish an external anchor.
+- `src/runtime_assurance_lab/cli.py`: added `evaluate-authenticated` requiring every authority/intent pin and checkpoint argument; untrusted `evaluate`, `evaluate-aibom`, `correlate-offline`, local journal and receipt remain non-assurance sources. Exit 0 only for verified-source matching synthetic assertion, 2 for indeterminate/drift, 3 for invalid inputs.
+- `tests/test_source_auth.py`: synthetic positive signed source, source/key/scope/time/canonicalization attacks, altered raw bytes/signature/authority, forged key replacement, false `verified`, stale/future, replay, rollback, forked head, gap, invalid genesis, missing root/checkpoint, CLI boundary, and the **residual authorized-but-dishonest signer** limitation. Fixed test-only Ed25519 private-key seed is PUBLIC and not a credential.
+- `scripts/ci_smoke.py`: added independently supplied synthetic pinned-positive, replay rejection and modified authority/hash denial to process-level CI smoke. `scripts/bench_source_auth.py` measures local preloaded verification time, with no API or upstream trust. `scripts/bench_incremental_value.py` keeps old historical 600-case claim-only same-input comparator but uses the fail-closed **public** evaluator for the separate forgery probe. `src/runtime_assurance_lab/bench.py` labels old measurements as claim-only; older `results/incremental_value.json` is **not overwritten**, preserving the RED historical M5 proof. New `results/incremental_value_post_gate.json` documents after-state. `results/demo/*.json` regenerated for v2 demo semantics. Docs updated without changing the completed M1–M5 historical status.
+
+**Actual test/debug/retest record:**
+
+```sh
+PYTHONPATH=src python3 -m pytest -q
+# BEFORE changes: 127 passed in 13.74s
+# After initial M6 code and test migration: 2 failed, 147 passed (attack-test expected reasons for wrong source/workload were inaccurate)
+# Fixed expected reason: 149 passed in 14.80s
+# Added deeper signed-source/adversarial tests: 1 failed, 27 passed in targeted file (incorrect test regex for naïve clock)
+# Fixed test regex: 28 passed in targeted file; 156 passed in full suite
+# Added valid-policy v2 and authorized-signer residual: 157 passed in full suite
+# Genesis/sequence consistency hardening: 2 targeted failures (old replay regression sent an invalid operator checkpoint)
+# Corrected replay test and CI smoke to pass non-genesis independent checkpoint.
+PYTHONPATH=src python3 -m pytest -q
+# FINAL LOCAL: 158 passed in 14.40s
+PYTHONPATH=src python3 scripts/ci_smoke.py
+# PASS 12 named process-level scenarios, including authenticated-positive, replay and self-attested-root rejection
+python3 scripts/check_gates.py
+# PASS seven STORED historical synthetic gates (old claim-only numbers, NOT current trust-gate qualification)
+PYTHONPATH=src python3 -m runtime_assurance_lab.cli verify --journal results/demo/journal.json --trust results/demo/trust-public.json --checkpoint results/demo/checkpoint.json
+# -> {"verified":true,"reason":"DECISIONS_RECOMPUTED"} on regenerated v2 synthetic journal (self-generated demo trust, NOT independent root)
+PYTHONPATH=src python3 scripts/bench_source_auth.py --samples 500 --output results/source_auth_benchmark.json
+# 500 preloaded repeated valid signed-source checks; p50=367.459us; p95=529.328us; p99=609.245us
+# process CPU 194.488ms; traced Python heap peak 57,224 bytes. Same synthetic input/checkpoint is deliberately reused
+# for microbenchmark only; no cross-run durable replay protection, source/cluster/GPU I/O or inference delay.
+PYTHONPATH=src python3 scripts/bench_incremental_value.py --trials 50 --output results/incremental_value_post_gate.json
+# 600 historical claim-only cases: same-input comparator 0 disagreements; 200/200 synthetic observable drift;
+# 200/350 latent drift; separate untrusted forged-source probe now status UNKNOWN, security_gate_passed=true (scoped).
+```
+
+**Trust-boundary finding:** a pinned Ed25519 key authenticates a *source assertion* if and only if its authority manifest was independently pinned; it **does not** prove actual model/GPU execution or independently validate Sigstore model identity. A compromised authorized signer or a caller who can alter both roots and inputs can still create matching signed assertions. `next_checkpoint` is returned but must be durably and atomically persisted outside the attacker-controlled channel for practical rollback prevention. The CLI's `--now` argument is not a trusted time service. No cross-language canonicalization interoperability, TUF/Sigstore bundle verification, key revocation/rotation policy, production RBAC, resource isolation, third-party adversarial review or live G4 measurements. Self-critical test coverage is **not independent review**.
+
+**Next executable action:** publish this tested local v2 source on the authorized public repository via non-force conditional ref update; verify exact remote tree and hosted Python 3.11 + 3.13 CI logs. Afterward, external G4 requires approved real signed source artifacts, durable independent trust roots/checkpoint store and a scoped read-only cluster for end-to-end metrics. G5 remains blocked by unmet real-world customer/licensing evidence. No production deployment or secrets accessed.

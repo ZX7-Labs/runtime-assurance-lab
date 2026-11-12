@@ -1,0 +1,12 @@
+{
+  "cpu_ms": 194.488,
+  "method": "sequential in-process full cryptographic gate with re-used test checkpoint; deliberately no durable advancement; NOT end-to-end detection latency",
+  "p50_us": 367.459,
+  "p95_us": 529.328,
+  "p99_us": 609.245,
+  "pod_cpu_rss_measured": false,
+  "samples": 500,
+  "scope": "preloaded, fixed synthetic key/source; independent pins are test assumptions; no real source authentication",
+  "traced_python_heap_peak_bytes": 57224,
+  "upstream_signature_verified": false
+}
