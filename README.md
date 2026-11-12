@@ -96,3 +96,9 @@ PYTHONPATH=src python -m pytest -q
 ```
 
 See `research/g4_independent_validation_protocol.md` for the blinded, independent real-upstream comparison, trust requirements, adverse cases and stop criteria. The investment decision is still **PAUSE_PRODUCT_BUILD**; no real G4 equivalence test has been run. Public source test fixture integrity is not upstream publisher identity or production attestation.
+
+## M10: operator-controlled G4 handoff preflight (research only)
+
+AICR and k8s-aibom already own bundle verification and workload inventory. Rather than building yet another production collector, `src/runtime_assurance_lab/g4_handoff.py` provides an **offline, no-network compatibility gate** for three operator-supplied JSON files (pinned intent, AICR RecipeResult, AIBOM CR). Its separate CLI `scripts/run_g4_handoff.py` requires independent SHA-256 pins for **all three** raw artifacts. It performs strict parser, source-byte and normalized identity checks and emits a minimal non-sensitive report. Even a perfect local synthetic input gets `decision=PAUSE_PRODUCT_BUILD`, `g4_authorized=false` and **exit 2**; invalid input gets **exit 3**. There is intentionally no exit 0, `GO` mode, or self-attested trusted-source option.
+
+See [`research/g4_operator_handoff.md`](research/g4_operator_handoff.md) for synthetic-only usage, operator-controlled artifact custody, a namespaced `get`-only AIBOM RBAC example and the *actual* NVIDIA/Google native-verification prerequisites. `results/g4_handoff_synthetic.json` is a deterministic **synthetic-only** example. The repo never accesses production source artifacts or authorizes G4; all live trust and customer-value blockers remain. The M8 `PAUSE_PRODUCT_BUILD` recommendation still applies.

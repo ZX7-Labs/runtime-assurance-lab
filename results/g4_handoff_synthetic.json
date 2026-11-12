@@ -1,0 +1,55 @@
+{
+  "aibom": {
+    "limitations": [
+      "AICR_RECIPE_UNAVAILABLE_FROM_AIBOM",
+      "CR_PROVENANCE_NOT_AUTHENTICATED",
+      "IMAGE_DIGEST_UNAVAILABLE_FROM_SUMMARY",
+      "INLINE_BOM_HASH_MATCHES_UNTRUSTED_CR",
+      "MODEL_DIGEST_UNAVAILABLE_FROM_SUMMARY",
+      "MODEL_SIGNATURE_NOT_INDEPENDENTLY_VERIFIED",
+      "RECONCILE_TIME_NOT_EXECUTION_TIME"
+    ],
+    "observation_available": true,
+    "source_version": "k8s-aibom/v1.6.2"
+  },
+  "aicr": {
+    "category": "inference",
+    "component_count": 1,
+    "limitations": [
+      "AICR_RECIPE_NOT_ATTESTED",
+      "AICR_RECIPE_NOT_DEPLOYMENT_PROOF"
+    ],
+    "source_version": "NVIDIA/aicr/v1.2.0"
+  },
+  "artifact_byte_pins_match": true,
+  "authentic_upstream_provenance_verified": false,
+  "cross_plane_runtime_binding_verified": false,
+  "decision": "PAUSE_PRODUCT_BUILD",
+  "g4_authorized": false,
+  "handoff_state": "STRUCTURALLY_COMPATIBLE_UNAUTHENTICATED",
+  "missing_independent_controls": [
+    "AUTHENTIC_UPSTREAM_SIGNATURE_AND_CREATOR_IDENTITY_VERIFICATION",
+    "INDEPENDENT_INTENT_AND_TRUST_ROOT_CUSTODY",
+    "DURABLE_INDEPENDENT_MONOTONIC_CHECKPOINT_AND_TRUSTED_CLOCK",
+    "ACTUAL_SAME_WORKLOAD_CROSS_PLANE_BINDING_AND_EXECUTION_WITNESS",
+    "BLINDED_EQUAL_INPUT_UPSTREAM_BASELINE_AND_CUSTOMER_VALIDATION"
+  ],
+  "pins_established_independently": false,
+  "runtime_model_execution_attested": false,
+  "schema": "ral-g4-untrusted-handoff/v1",
+  "source_type": "OPERATOR_SUPPLIED_UNTRUSTED_EXPORTS",
+  "sources": {
+    "aibom": {
+      "bytes": 1584,
+      "sha256": "sha256:ffaa05cc35bebadad3779608a5d50350d53df0d229c07b0fdbd261642fe28437"
+    },
+    "aicr_recipe": {
+      "bytes": 488,
+      "sha256": "sha256:a44787410b9f5f8e7c60df82007639c11b90bacff731cf75ad9ad0681305febb"
+    },
+    "intent": {
+      "bytes": 354,
+      "sha256": "sha256:0467066640dcba132bc7aff5c812d7fbb9fbabcdd44d4ba2b771263d05306aa1"
+    }
+  }
+}

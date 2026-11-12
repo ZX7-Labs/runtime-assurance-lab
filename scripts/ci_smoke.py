@@ -63,6 +63,27 @@ def main() -> None:
     assert combined["sources"]["aicr"]["sha256"] == pinned["platform_recipe_digest"]
     assert "AICR_RECIPE_NOT_DEPLOYMENT_PROOF" in combined["sources"]["aicr"]["limitations"]
 
+    # G4 operator intake is an integrity-only preflight: even fully matching
+    # pinned synthetic files MUST NOT exit successfully or grant G4 approval.
+    handoff_args = [sys.executable, str(ROOT / "scripts" / "run_g4_handoff.py")]
+    for name, filename in (("intent", "intent-aicr-synthetic.json"),
+                           ("recipe", "aicr-recipe-result-synthetic.json"),
+                           ("aibom", "aibom-v1beta1-synthetic.json")):
+        raw = (fixture / filename).read_bytes()
+        handoff_args.extend([f"--{name}", str(fixture / filename),
+                             f"--expected-{name}-sha256", "sha256:" + sha256(raw).hexdigest()])
+    intact = subprocess.run(handoff_args, cwd=ROOT, capture_output=True, text=True, timeout=10)
+    assert intact.returncode == 2 and not intact.stderr
+    intact_report = json.loads(intact.stdout)
+    assert intact_report["decision"] == "PAUSE_PRODUCT_BUILD"
+    assert intact_report["handoff_state"] == "STRUCTURALLY_COMPATIBLE_UNAUTHENTICATED"
+    assert intact_report["g4_authorized"] is False
+    spoof = handoff_args[:]
+    spoof[spoof.index("--expected-aibom-sha256") + 1] = "sha256:" + "0" * 64
+    rejected = subprocess.run(spoof, cwd=ROOT, capture_output=True, text=True, timeout=10)
+    assert rejected.returncode == 3 and not rejected.stderr
+    assert json.loads(rejected.stdout)["decision"] == "INVALID_OR_UNTRUSTED_HANDOFF"
+
     with TemporaryDirectory(prefix="ral-ci-") as tmp:
         out = Path(tmp)
         generated = invoke("demo", "--fixtures", fixture, "--output", out, code=0)
@@ -174,7 +195,7 @@ def main() -> None:
 
     print(json.dumps({
         "offline_smoke": "pass",
-        "cases": ["untrusted-clean-unknown", "untrusted-drift-unknown", "authenticated-signed-ok", "signed-replay-rejected", "self-attested-root-rejected", "stale", "aibom-unknown", "aicr-aibom-unknown", "receipt-replay-and-false-OK-rejected", "same-input-negative-control", "signed-demo", "tamper-rejected", "sqlite-checkpoint-consumed", "sqlite-checkpoint-replay-rejected"],
+        "cases": ["untrusted-clean-unknown", "untrusted-drift-unknown", "authenticated-signed-ok", "signed-replay-rejected", "self-attested-root-rejected", "stale", "aibom-unknown", "aicr-aibom-unknown", "receipt-replay-and-false-OK-rejected", "same-input-negative-control", "signed-demo", "tamper-rejected", "sqlite-checkpoint-consumed", "sqlite-checkpoint-replay-rejected", "g4-handoff-untrusted-no-go", "g4-handoff-external-pin-fail"],
         "scope": "synthetic CPU-only; no cluster, no anchored trust root",
     }, sort_keys=True))
 

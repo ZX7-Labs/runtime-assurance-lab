@@ -1,0 +1,11 @@
+{
+  "count": 200,
+  "decision": "PAUSE_PRODUCT_BUILD",
+  "g4_authorized": false,
+  "max_us": 3546.625,
+  "p50_us": 551.186,
+  "p95_us": 1350.73,
+  "peak_traced_python_heap_bytes": 49154,
+  "process_cpu_total_ms": 135.917,
+  "scope": "preloaded synthetic JSON + byte-pin/schema checks only; excludes file IO, upstream proof, cluster, GPU and trusted custody"
+}

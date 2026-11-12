@@ -47,3 +47,9 @@
 ## D10 — accept upstream-local manifest component without inventing trust (M9)
 
 First live public-fixture CI exposed an AICR v1.2.0 `RecipeResult` schema mismatch: `componentRefs.source=""` is permitted and appears in official local-manifest components. Rejecting every blank string made RAL **less compatible with existing NVIDIA data**. We narrowly relax it when bounded nonempty `manifestFiles` exist, add a limitation `AICR_LOCAL_MANIFEST_SOURCE_UNATTESTED`, and retain strict rejection otherwise. This is compatibility repair, not new product scope or evidence that model execution was observed.
+
+## D11 — prepare operator G4 evidence custody instead of reimplementing upstream (M10)
+
+Alternative A was a new cluster collector plus in-house signing and certificate verifier; rejected because NVIDIA AICR and Google k8s-aibom already supply specialized inventory/verification and because an unanchored reimplementation cannot prove runtime truth. Alternative B is an explicitly non-authorizing offline handoff format that consumes existing source files and *operator-held* pins while awaiting actual upstream Sigstore/bundle and Kubernetes API provenance. Chose B; it is a limited research/test bridge, not a third evidence authority.
+
+A SHA-256 pin matching input bytes means integrity relative to the selected pin, not upstream authorship. An attacker who supplies both the file and its pin still cannot obtain `g4_authorized=true`; in fact the handoff CLI has no successful authorization exit. AICR `RecipeResult` does not natively bind a specific Kubernetes workload at runtime. The script refuses to create that linkage by inference; source authenticity, independent ownership and actual model execution remain outside this offline interface. No new product/runtime feature, deployment or license grant is authorized by M10.
