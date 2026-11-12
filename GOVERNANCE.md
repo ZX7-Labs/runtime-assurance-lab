@@ -15,4 +15,8 @@ Contributions should preserve fail-closed evaluation, minimize privileges and ex
 
 ## How to participate
 
+The project has no dedicated funded maintainer/reviewer team. An issue comment is a useful signal of interest, not an assignment or promise of response. Prefer small, reproducible contributions. Prioritize independently verified errors in the research record, unsafe trust-boundary assumptions and upstream parity over new product implementation.
+
+No one should treat stars, forks, issue comments or an unreviewed PR as validated user demand.
+
 Use [CONTRIBUTING.md](CONTRIBUTING.md) and the repository issue templates. Security reports are handled privately per [SECURITY.md](SECURITY.md) where a suitable channel is available. Community conduct follows [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

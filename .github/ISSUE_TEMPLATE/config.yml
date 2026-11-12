@@ -3,6 +3,9 @@ contact_links:
   - name: Security reporting
     url: https://github.com/ZX7-Labs/runtime-assurance-lab/security
     about: Do not publish vulnerabilities or secrets in a public issue. Use private vulnerability reporting when enabled.
+  - name: Reproduce locally (no GPU)
+    url: https://github.com/ZX7-Labs/runtime-assurance-lab/blob/main/docs/REPRODUCIBILITY.md
+    about: Cross-platform commands, expected exit codes and a reproducible-report checklist.
   - name: Contribution guide
     url: https://github.com/ZX7-Labs/runtime-assurance-lab/blob/main/CONTRIBUTING.md
     about: How to test, review and contribute reproducible work.

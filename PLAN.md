@@ -191,3 +191,13 @@ Repository owner authorized publishing the existing original code as open source
 **Deliverables:** short and accurate public README with tested quickstart; CONTRIBUTING, SECURITY, CODE_OF_CONDUCT, architecture and roadmap; tested GitHub issue and PR forms; a small metadata regression test; generated demo outputs removed and ignored; full existing security/CI/gates remain mandatory. Do not delete scientific evidence or test fixtures in a cosmetic cleanup.
 
 **Acceptance:** SPDX license is recognized by GitHub, source package includes LICENSE/NOTICE, Python 3.11/3.13 CI and public vendor fixture research jobs pass, README runnable commands work on synthetic fixtures, changed source blob hashes are verified on GitHub, no secrets/private data exposed. The research gate must stay `PAUSE_PRODUCT_BUILD`. Real G4, G5 and security assurance remain blocked on independently authenticated real same-workload evidence, protected trust roots, actual GPU/Kubernetes infrastructure and external adversarial review.
+
+## M12 — public research usability and contributor recruitment (2026-11-13)
+
+**Hypothesis:** Better onboarding and precise reviewable tasks may attract independent scrutiny of H1 without prematurely building a redundant product. Contributions and adoption are not guaranteed; GitHub stars alone are not product evidence.
+
+**Scope:** Refine the existing README and contributor documents, provide OS-portable CPU-only reproduction, state an evidence/metrics claim ladder, add a contributor task guide and maintainer outreach playbook, add GitHub reproduction issue intake and focused metadata regression tests. Retain Apache-2.0, original negative research and all trust boundaries. Use official NVIDIA 2026-11-11 integration documentation and GitHub community guidance. No production code change, runtime monitor, secrets, cluster or remote release.
+
+**Acceptance:** GitHub source commit uses a verified non-force fast-forward; the exact committed tree includes all expected docs and tests. Python 3.11/3.13 hosted suites, offline smoke and research no-go gate must pass. All relative Markdown targets resolve; new issue form has no private-data intake; synthetic provenance must not be described as physical GPU execution. Publish only a truthful request for independent review.
+
+**Falsify:** If reviewers cannot reproduce the entrypoint, forms mislead users to share secrets, links break, CI fails, or outreach yields no qualified reviews, correct/stop this campaign. Product build remains blocked by the independently owned G4 requirements; documentation or contribution activity cannot override that gate.

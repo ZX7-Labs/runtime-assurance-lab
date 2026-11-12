@@ -14,6 +14,8 @@
 
 ## Ways to help **without a GPU**
 
+See [contributor paths](CONTRIBUTOR_PATHS.md) for specific tasks, [reproducibility](REPRODUCIBILITY.md) for exact commands, and [claims/baselines](CLAIMS_AND_BASELINES.md) for the level of proof required.
+
 - Audit documented upstream capabilities using pinned vendor releases and record corrections with citations.
 - Reproduce and improve synthetic security counterexamples, preserving the absence of `OK` for untrusted data.
 - Reproduce Python 3.11/3.13 CI across environments and improve the developer experience.

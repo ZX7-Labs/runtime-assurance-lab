@@ -9,6 +9,8 @@ Thank you for helping test a hard question: **does a separate cross-plane assura
 3. For a small bug or regression, use the **Bug report** template, attach a minimized non-sensitive reproducer and state the expected `OK`/`DRIFT`/`UNKNOWN` behavior.
 4. Fork the public repository, create a focused branch, and submit a pull request. Maintainers review changes; submissions are not automatically accepted.
 
+**No GPU? No problem.** Start with the [portable reproduction guide](docs/REPRODUCIBILITY.md) and [contributor paths](docs/CONTRIBUTOR_PATHS.md). A small, well-documented negative result is preferable to an unscoped feature request.
+
 **Available starting points:** [#1 Portability / quickstart](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/1), [#2 Equal-input upstream research](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2), [#3 Public threat-model review](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3). For a new idea use the issue templates.
 
 **Want a specific, reviewable task?** Start with the [independent verification challenge](research/INDEPENDENT_REVIEW_CHALLENGE.md), including its fair-comparison method, contributor lanes, evidence rubric and safe-data rules. [#4](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/4) is for *potential* real G4 research partners, not public upload of evidence.
@@ -16,7 +18,7 @@ Thank you for helping test a hard question: **does a separate cross-plane assura
 ## Local development
 
 ```bash
-python -m pip install -e '.[test]'
+python -m pip install -e ".[test]"
 python -m pytest -q
 python scripts/ci_smoke.py
 python scripts/check_gates.py
@@ -25,6 +27,8 @@ python -m compileall -q src tests scripts
 ```
 
 `check_gates.py` validates **stored historical synthetic** acceptance evidence, not a fresh GPU benchmark. The research gate must continue to return `PAUSE_PRODUCT_BUILD` until credible external G4 data changes the investment decision.
+
+On Windows PowerShell, the venv Python can be invoked as `.\\.venv\\Scripts\\python.exe` without changing script-execution policy; see the [portable guide](docs/REPRODUCIBILITY.md). A smoke result is not a claim that the application supports a real GPU.
 
 CI uses Python **3.11 and 3.13**, a read-only token and CPU-only GitHub-hosted runners. Local development can use either supported version; GitHub CI must pass both. Do not introduce secrets, GPU dependencies, paid services, automatic network fetches into the library, new controllers or new trust formats as routine changes.
 
@@ -52,4 +56,4 @@ Any data from a real environment must be authorized, de-identified, legally shar
 
 By submitting a contribution you agree to license it under this repository's **Apache License 2.0**. Do not submit code you lack the right to relicense. Preserve third-party copyright and licensing notices; avoid copying upstream source code merely to build an adapter.
 
-There is no contributor SLA, production support commitment, or guaranteed roadmap. Decisions prioritize clear evidence and safety over feature count.
+There is no contributor SLA, production support commitment, or guaranteed roadmap. Comments expressing intent are helpful for avoiding duplicate work; no assignment, response or merge is guaranteed. For questions use [SUPPORT.md](SUPPORT.md). For shareable, accurate project positioning see the [maintainer launch playbook](docs/COMMUNITY_LAUNCH.md). Decisions prioritize clear evidence and safety over feature count.

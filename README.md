@@ -2,7 +2,7 @@
 
 # Runtime Assurance Lab
 
-**Know what the evidence proves. And what it doesn't.**
+**Know what AI workload evidence proves—and what it does not.**
 
 [![CI](https://github.com/ZX7-Labs/runtime-assurance-lab/actions/workflows/offline-assurance.yml/badge.svg)](https://github.com/ZX7-Labs/runtime-assurance-lab/actions/workflows/offline-assurance.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
@@ -10,7 +10,7 @@
 
 *A small, open-source research laboratory for testing claims about AI workload intent, observed configuration and evidence trust.*
 
-[Get started](#get-started) · **[Join the independent verification challenge](research/INDEPENDENT_REVIEW_CHALLENGE.md)** · [Contribute](CONTRIBUTING.md) · [Research roadmap](docs/ROADMAP.md) · [Security](SECURITY.md)
+[Run locally](#get-started) · **[Choose a contribution](docs/CONTRIBUTOR_PATHS.md)** · [Research claims](docs/CLAIMS_AND_BASELINES.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 </div>
 
@@ -23,7 +23,7 @@ A deployment recipe says **what should run**. An inventory report says **what a 
 
 Can independent, trustworthy cross-plane correlation detect meaningful drift that upstream tools—used together with the same evidence and policy—would otherwise miss?
 
-**We do not know yet.** This repository makes that question reproducible and falsifiable rather than presenting synthetic passing tests as proof.
+**We do not know yet.** This repository makes that question reproducible and falsifiable rather than presenting synthetic passing tests as proof. It is a research platform for independent reviewers, **not** a new AI runtime monitor or a production assurance service.
 
 | We have | We do **not** have |
 | --- | --- |
@@ -33,7 +33,7 @@ Can independent, trustworthy cross-plane correlation detect meaningful drift tha
 | Tamper, replay, rollback and forged-source regression tests | An audited production security boundary |
 | Reproducible synthetic experiments and vendor-native CPU release checks | A demonstrated advantage over upstream tools or real customer validation |
 
-## 🧪 Independent verification challenge — contributions welcome
+## Start contributing: one claim, one reproduction, one review
 
 You can contribute **without a GPU, cluster, account credentials or existing access to NVIDIA/Google infrastructure**. Choose a task matching your background:
 
@@ -42,7 +42,7 @@ You can contribute **without a GPU, cluster, account credentials or existing acc
 - **Security:** [#3 · independently review source authenticity and replay boundaries](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3) (disclose vulnerabilities privately).
 - **Real-world validation:** [#4 · explore an authorized, privacy-safe G4 research partnership](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/4) (do **not** post live data).
 
-**[Read the full contribution challenge, evidence rubric and stop/go rules →](research/INDEPENDENT_REVIEW_CHALLENGE.md)**
+**[Pick a concrete first task](docs/CONTRIBUTOR_PATHS.md)** · [Independent challenge and evidence rubric](research/INDEPENDENT_REVIEW_CHALLENGE.md) · [Reproduction instructions for Linux, macOS and Windows](docs/REPRODUCIBILITY.md).
 
 We welcome rigorous findings that tell us **not to build** a redundant product. No external reviewer, real G4 operator, community adoption, or live GPU evidence is claimed yet.
 
@@ -53,21 +53,21 @@ You need **Python 3.11+**. No GPU, cluster, credentials or Docker required for l
 ```bash
 git clone https://github.com/ZX7-Labs/runtime-assurance-lab.git
 cd runtime-assurance-lab
-python -m pip install -e '.[test]'
+python -m pip install -e ".[test]"
 python -m pytest -q
 ```
 
 Explore the synthetic signed-journal demo (output is generated outside the checkout):
 
 ```bash
-ral demo --fixtures fixtures --output /tmp/ral-demo
-ral verify --journal /tmp/ral-demo/journal.json \
-  --trust /tmp/ral-demo/trust-public.json \
-  --checkpoint /tmp/ral-demo/checkpoint.json
+ral demo --fixtures fixtures --output results/demo
+ral verify --journal results/demo/journal.json \
+  --trust results/demo/trust-public.json \
+  --checkpoint results/demo/checkpoint.json
 python scripts/run_research_gate.py --verify-report results/research_gate.json
 ```
 
-The demo **creates its own keys and trust data**. A successful `verify` verifies internal consistency of a self-generated example—not independent source identity, a real cluster or GPU execution.
+The demo **creates its own keys and trust data** in an ignored folder. A successful `verify` verifies internal consistency of a self-generated example—not independent source identity, a real cluster or GPU execution. For a PowerShell/Windows invocation that does not rely on POSIX line continuations, use the [portable reproduction guide](docs/REPRODUCIBILITY.md).
 
 To see the fail-closed behavior:
 
@@ -101,6 +101,8 @@ Operator intent (JSON)        Upstream recipe / AIBOM export (JSON)
 
 ## What is and is not verified
 
+**Read the [claims and baseline matrix](docs/CLAIMS_AND_BASELINES.md) before quoting any benchmark.** Existing local microsecond measurements are not end-to-end detection latency or Kubernetes CPU/memory overhead. In a historical 600-case synthetic **same-input** reference comparison, there were **zero disagreements**—no verified incremental advantage. The weak "naive" baseline is not a NVIDIA/Google/policy baseline.
+
 - **Verified in CI:** Python 3.11/3.13 tests; synthetic/adversarial source-authentication checks; pinned public **repository test fixtures**; constrained research gates. Native CPU experiments have exercised published vendor CLIs and checked release signatures/checksums; see the exact [evidence ledger](EVIDENCE.md).
 - **Not verified:** an actual model running on a GPU, the origin of a live workload observation, same-workload AICR↔AIBOM attestation, real detection latency or market demand. [Independent G4 validation protocol](research/g4_independent_validation_protocol.md).
 - **Existing work matters:** [NVIDIA AICR](https://github.com/NVIDIA/aicr) and [Google k8s-aibom](https://github.com/GoogleCloudPlatform/k8s-aibom) are already Apache-2.0 open source and cover much of the underlying functionality. [Upstream overlap audit](UPSTREAM_AUDIT.md). We are **not** rebuilding their controllers or signing stack.
@@ -111,7 +113,7 @@ Operator intent (JSON)        Upstream recipe / AIBOM export (JSON)
 
 **Pick an open task:** [#1 · reproduce the quickstart](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/1) (beginner-friendly), [#2 · independent upstream comparison](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2), or [#3 · trust-boundary review](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3).
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md), the [architecture](docs/ARCHITECTURE.md), and the [research roadmap](docs/ROADMAP.md). Open a [research proposal](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/new/choose) before proposing a large feature. Do not publish credentials, private cluster exports, private signing keys or sensitive model information in an issue/PR.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md), the [contributor paths](docs/CONTRIBUTOR_PATHS.md), [reproducibility guide](docs/REPRODUCIBILITY.md), [architecture](docs/ARCHITECTURE.md), and [research roadmap](docs/ROADMAP.md). Open a [research proposal](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/new/choose) before proposing a large feature. Do not publish credentials, private cluster exports, private signing keys or sensitive model information in an issue/PR.
 
 Development requires **evidence, not confidence**: run `python -m pytest -q`, `python scripts/ci_smoke.py`, `python scripts/check_gates.py` (stored historical evidence), and `python scripts/run_research_gate.py --verify-report results/research_gate.json` from the repository root. Real G4 work requires authorization and independent custody. [Security reporting](SECURITY.md).
 
@@ -125,6 +127,8 @@ Development requires **evidence, not confidence**: run `python -m pytest -q`, `p
 | [`results/`](results/) | Historical machine-readable research results, **not product SLAs** |
 | [`research/`](research/) | G4 operator handoff, vendor comparison and preregistered testing |
 | [`PLAN.md`](PLAN.md) · [`EVIDENCE.md`](EVIDENCE.md) | Milestones, limits, commands and archived findings |
+| [`docs/CLAIMS_AND_BASELINES.md`](docs/CLAIMS_AND_BASELINES.md) | Truth-in-metrics matrix; existing vendor overlap and falsifiers |
+| [`docs/CONTRIBUTOR_PATHS.md`](docs/CONTRIBUTOR_PATHS.md) | Specific no-GPU tasks for first-time contributors |
 
 ## License and independence
 

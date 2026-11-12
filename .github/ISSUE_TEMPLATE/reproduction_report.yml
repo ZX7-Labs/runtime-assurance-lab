@@ -1,0 +1,44 @@
+name: CPU-only reproduction report
+description: Report independent local commands, exit codes, portability issues or research limitations (no cluster required).
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: "Report only public/synthetic evidence. **Do not paste secrets, private cluster outputs or vulnerability exploits.** This is research, not a production security tool. Read docs/REPRODUCIBILITY.md first."
+  - type: input
+    id: revision
+    attributes:
+      label: Git commit SHA
+      description: Paste the exact commit from git rev-parse HEAD (not a branch name).
+      placeholder: 40-character commit SHA
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Operating system, architecture and Python version
+      placeholder: Example - Windows 11 amd64, Python 3.13
+    validations:
+      required: true
+  - type: textarea
+    id: procedure
+    attributes:
+      label: Reproduction commands and exit codes
+      description: Use synthetic public fixtures only; include sanitized outputs when relevant.
+      placeholder: Commands, exit codes, relevant output
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected versus observed result
+      description: UNKNOWN and PAUSE_PRODUCT_BUILD can be expected research results.
+    validations:
+      required: true
+  - type: textarea
+    id: limitations
+    attributes:
+      label: What was NOT verified?
+      description: State whether upstream tools, actual Kubernetes/GPU, source authenticity, or real latency were untested.
+    validations:
+      required: true
