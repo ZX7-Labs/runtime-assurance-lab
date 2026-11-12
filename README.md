@@ -67,3 +67,15 @@ PYTHONPATH=src python scripts/ci_smoke.py
 ```
 
 Use `python -m runtime_assurance_lab.cli checkpoint-init-offline --help` and `evaluate-authenticated-stateful --help` for the bounded file/independent-pin interface. The paired CLI paths are **not** a replacement for Sigstore, trusted time, an external monotonic key/anchor store, or cluster attestation. Restoring both SQLite **and** the operator's external state hash defeats rollback protection; this is an intentionally tested residual vulnerability. Crash recovery when the local commit precedes durable external pin publication is not automated. G4 remains blocked.
+
+
+### M8: research stop/go decision (no new runtime feature)
+
+**Current recommendation: `PAUSE_PRODUCT_BUILD`.** Official sources confirm NVIDIA AICR, Google k8s-aibom and Sigstore already provide major parts of the proposed assurance chain. The M5 600-case same-input synthetic reference study showed **zero algorithmic disagreements**, not measured incremental benefit. G4 actual upstream comparison and customer evidence remain unavailable, so expanding another inventory or signature subsystem is unjustified.
+
+```sh
+PYTHONPATH=src python scripts/run_research_gate.py --verify-report results/research_gate.json
+PYTHONPATH=src python -m pytest -q tests/test_research_gate.py
+```
+
+`research/upstream_overlap.json` documents checked vendor capabilities and falsifiers; `results/research_gate.json` is a deterministic **research NO-GO** report. Exit 0 from the script means the historical report matches recomputation; it **never authorizes production**. Do not use generated checklists or self-entered data as proof of real-world product value. Only authentic upstream evidence, an independently managed trust anchor, representative blinded baseline measurements, and a customer-backed requirement can justify reopening the investment decision. See `PLAN.md` M8.

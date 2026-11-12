@@ -402,3 +402,40 @@ git diff --check -> PASS.
 - Exact published source GitHub Actions run [43184485606](https://github.com/ZX7-Labs/runtime-assurance-lab/actions/runs/43184485606) reached `completed / success` on head `b43eba...`. Independently fetched two hosted job logs: **Python 3.11: 176 passed in 2.91s**, **Python 3.13: 176 passed in 3.49s**. Both job steps including Python compilation, 14-case `offline_smoke=pass` (with stateful consumption and replay rejection), and checks of seven **stored historical** synthetic pilot gates completed successfully. Runner CPU/RSS and real Kubernetes/GPU usage were **not** measured.
 - M7 remains an **offline checkpoint-state simulation only**. Even a matching Ed25519 signature with a monotonic SQLite sequence is not an independently verified running model. Rollback succeeds if both local DB and external pin are compromised, explicitly demonstrated by the negative-control test. No independent adversarial security reviewer or upstream authenticated evidence was available, so G4 and G5 retain their prior blockers. No new network/cluster deployment, secret handling, paid runner or open-source license action.
 - **Next executable action:** obtain authorization for an independently administered monotonic state/identity service and redacted authentic NVIDIA AICR and Google k8s-aibom evidence; verify upstream signers via existing mechanisms, enforce scoped read-only access, collect live drift/latency/resource/control-comparator measurements. Without it, only bounded offline security experiments may continue; do not imply production assurance. This evidence-only update is a new commit and must have its own remote hash and hosted CI verified after publication.
+
+## 24. M8 upstream overlap and investment STOP checkpoint — local verification (2026-11-12)
+
+**Intent:** User explicitly directed research-first continuation and requested that this product **not** be built merely for the sake of building. Recovered the existing 66-file M7 source from `runtime-assurance-lab-m7-verified.zip` in `/mnt/data/runtime-assurance-m8-work/runtime-assurance-lab` (no Git data was packaged in the zip). Checked the matching `PLAN.md`, `EVIDENCE.md` and `checkpoint_store.py` Git blob SHA-1 values against GitHub `main=bd8ed9ef06d4b5807ccd81df1ca64c8539cb6b7c`; all three exact hashes matched. No prior research milestone or live capability was invented. The other 63 blob hashes remain for final remote tree equality verification during publishing.
+
+**Primary-source desk audit:** Inspected public pinned Google `k8s-aibom v1.6.2` README and upstream sources, NVIDIA `aicr v1.2.0` plus the official artifact verification and CLI reference, and Sigstore bundle/policy documentation. Source versions and links appear in `research/upstream_overlap.json`, `UPSTREAM_AUDIT.md`, and `PLAN.md` M8. NVIDIA's artifact/evidence verifier already supports closed-world inventory digests, Sigstore signatures, identity and creator restrictions, and signed recipe/snapshot/validator/BOM evidence. Its CLI documents that it does **not** replay inline constraints against the bundled snapshot; this is a *possible integration investigation*, not customer value. Google's controller already inventories Kubernetes AI workloads and offers verified signature confidence under trust roots and signer policies. Existing Sigstore/policy solutions already address signatures and trusted policy inputs. **No actual upstream binaries, live Kubernetes, authenticated source bundles or GPUs were run in this milestone.** Upstream source/doc review does not guarantee every provider capability, support tier or measured outcome.
+
+**Decision and implementation:** Evaluated A) add new runtime controller/signing/rollback feature vs B) freeze new product features, preserve M1–M7, and enforce a repeatable falsification decision. Selected **B**. M5's *historical, claim-only synthetic* 600-case same-input independent reference comparator had **0 disagreements**, not an advantage over existing upstream software. Added `research/upstream_overlap.json`, `src/runtime_assurance_lab/research_gate.py`, `scripts/run_research_gate.py`, `tests/test_research_gate.py`, and `results/research_gate.json`; extended existing CPU GitHub Actions matrix to independently recompute the report. Updated `PLAN.md`, `EVIDENCE.md`, `DECISIONS.md`, `README.md`, `UPSTREAM_AUDIT.md`, `AGENTS.md`. No new runtime product behavior, signing protocol, dependency, cloud API, secrets or privileged service. `PAUSE_PRODUCT_BUILD` is a research **no-go until evidence**, not proof that the product can never provide value. No product launch/distribution approval.
+
+**Actual commands/results in this local environment:**
+
+```text
+# Baseline recovered M7 source, with PYTHONPATH correctly available to subprocess tests:
+PYTHONPATH=src python -m pytest -q -> 176 passed in 25.36s.
+# One combined baseline command timed out after pytest; smoke was NOT inferred from it.
+# Initial new gate tests:
+PYTHONPATH=src python -m pytest -q tests/test_research_gate.py -> 20 passed in 4.66s.
+# Added report duplicate-key, size-limit and spoofed-GO regressions:
+PYTHONPATH=src python -m pytest -q tests/test_research_gate.py -> 23 passed in 8.05s.
+# Complete modified source tree:
+PYTHONPATH=src python -m pytest -q -> 199 passed in 30.32s.
+PYTHONPATH=src python scripts/ci_smoke.py -> offline_smoke=pass, 14 named existing synthetic subprocess cases.
+python scripts/check_gates.py -> passed=true, 7/7 STORED/HISTORICAL synthetic pilot gates (not a new M8 performance benchmark).
+PYTHONPATH=src python scripts/run_research_gate.py --verify-report results/research_gate.json
+  -> decision=PAUSE_PRODUCT_BUILD, report_matches=true, 4 missing independent gates.
+python -m compileall -q src tests scripts -> PASS.
+python3.11 --version -> not installed in the local shell; Python 3.11 must be verified on GitHub-hosted CI after publication.
+python -m pip check -> pre-existing unrelated conflict moviepy 2.2.1 vs Pillow 12.3.0.
+```
+
+**Adversarial research-decision checks:** Reject missing/duplicated sources, missing citations, duplicate hypothesis identifiers, fabricated `PROVEN` hypothesis, contradictory historical input, fake claims of upstream binary execution/product differentiation, forged `OK` source probe, forged recorded GO decision, missing/duplicate-key/oversized report, and overwriting an existing report. Adding a caller's `product_go=true` does not make a research report an authorization. Input files and documentation remain **user-supplied claims**, not independently signed evidence. The script is a bounded reproducible research control and intentionally cannot auto-approve production from synthetic inputs.
+
+**Resource use and investment:** Research gate uses standard Python library and existing project dependency; no additional packages, GPUs, cloud resources or paid runners; gate's own CPU/RSS not benchmarked. Existing historical M5/M7 resource numbers are unchanged and not reused as live measurements.
+
+**Disposition/stop criterion:** `results/research_gate.json` says **`PAUSE_PRODUCT_BUILD`**. Four missing externally established conditions: authentic upstream evidence; independently anchored provenance/monotonic state; representative real AICR + k8s-aibom + Sigstore/policy comparison with controlled drift; customer-backed demonstrable value. If upstream tool composition proves equivalent performance/functionality, **stop the standalone system** and consider a small upstream contribution rather than duplicate products. G4 live testing and G5 commercialization still blocked. Next executable non-development action: obtain authorized redacted signed upstream artifacts and an independently operated test environment with pre-registered comparison protocol. Do not add another product subsystem in the meantime.
+
+**Publication:** Local M8 documentation, code and tests are ready for an immutable Git snapshot; GitHub publication, exact all-file blob comparison and hosted Python 3.11/3.13 job results will be recorded in a subsequent evidence-only checkpoint. No production approval is implied by a green hosted CI run.

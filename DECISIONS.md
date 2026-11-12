@@ -27,3 +27,12 @@
 21. **D-021 – No silent protocol compatibility.** Updated policy version to `ral-intent-observation-v2-provenance-gate`. Historical M5 outputs remain in `results/incremental_value.json` as evidence of the old unsafe behavior; newly computed claims-only comparisons are explicitly labeled. A source-authenticated `OK` asserts agreement with an authorized signer's statement, **not GPU/model execution or Sigstore model artifact verification**.
 
 22. **D-022 — M7 bounded transactional checkpoint simulation, not a trusted anchor.** Offline tests now require an independently held SHA-256 of the entire previous state alongside pinned root/intent; local SQLite `BEGIN IMMEDIATE` serializes verification and advancement and commits before returning success. Operator-only bootstrap cannot overwrite a stream. A real external monotonic CAS/transparency authority was evaluated but remains blocked by G4 infrastructure and source provenance. Both the DB **and** its external digest can be rolled back by an attacker controlling both; no automatic local fallback is allowed. Trusted upstream Sigstore/AICR semantics remain the eventual integration target. No additional external dependencies or cryptographic formats.
+
+
+## D-008 (2026-11-12): pause standalone product expansion pending upstream value proof
+
+**User constraint:** Do not keep building a system that provides no real additional benefit.
+
+**Alternatives:** A) add more prototype control, signing, rollback or inventory features; B) audit upstream overlap, create a machine-checkable research NO-GO gate, demand blinded real upstream comparison before engineering expansion. **Chose B.** Existing NVIDIA AICR, Google k8s-aibom and Sigstore/policy tooling already provide most of those primitives. M5 600-case same-input independent reference comparator produced 0 differences; there is no observed incremental efficacy versus upstream, because no actual upstream executable comparison has yet occurred.
+
+**Scope of decision:** `PAUSE_PRODUCT_BUILD`, not an irreversible claim that cross-plane assurance has no potential value. Only G4 evidence acquisition/analysis, independent trust/security review, and prospective customer research may reopen the investment decision. Preserve M1–M7 experiments as research; no production assurances, licensing commitments, new controllers or vendor-specific reimplementations.

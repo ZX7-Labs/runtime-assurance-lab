@@ -1,0 +1,59 @@
+{
+  "schema": "ral-research-investment-v1",
+  "review_date": "2026-11-12",
+  "method": "Manual primary-source review at pinned upstream versions; NOT execution or independent customer research",
+  "sources": [
+    {
+      "id": "NVIDIA_AICR",
+      "reviewed_ref": "NVIDIA/aicr v1.2.0; official AICR artifact verification documentation (reviewed 2026-11-12)",
+      "reference": "https://docs.nvidia.com/aicr/latest/user-guide/artifact-verification/",
+      "tag_reference": "https://github.com/NVIDIA/aicr/tree/v1.2.0",
+      "capabilities": [
+        "Closed-world deployment bundle checksum and inventory verification",
+        "Sigstore attestation, trusted roots and creator identity pinning",
+        "Recipe evidence bundles binding recipe, snapshot, validator reports and BOM"
+      ],
+      "known_gap_or_limit": "Verifier documents that signature binds source claims, not actual cluster physicality; inline constraints are not replayed by aicr evidence verify. This is not automatically customer demand for a new product."
+    },
+    {
+      "id": "GOOGLE_K8S_AIBOM",
+      "reviewed_ref": "GoogleCloudPlatform/k8s-aibom v1.6.2 tag 47bf6418e40eee22905973528b879dc075181b3f",
+      "reference": "https://github.com/GoogleCloudPlatform/k8s-aibom/blob/v1.6.2/README.md",
+      "tag_reference": "https://github.com/GoogleCloudPlatform/k8s-aibom/tree/v1.6.2",
+      "capabilities": [
+        "Kubernetes AI workload inventory, CycloneDX 1.6 output, component/model evidence locators",
+        "Model signature trust-root and signer-identity controls for verified confidence tier",
+        "Ready/Stale status, digest resolution, kubectl aibom verify and external sinks"
+      ],
+      "known_gap_or_limit": "Inventory and declared/signed model claims alone cannot establish that an exact model executed on a physical GPU."
+    },
+    {
+      "id": "SIGSTORE_POLICY",
+      "reviewed_ref": "Sigstore bundle, Cosign and policy-controller documentation; reviewed 2026-11-12",
+      "reference": "https://docs.sigstore.dev/about/bundle/",
+      "tag_reference": "https://docs.sigstore.dev/policy-controller/installation/",
+      "capabilities": [
+        "Artifact signature/bundle and transparency proof verification",
+        "Signer identity and policy enforcement via existing tools"
+      ],
+      "known_gap_or_limit": "Valid cryptographic signatures authenticate assertions under a trust policy, not independent runtime execution."
+    }
+  ],
+  "candidate_hypotheses": [
+    {
+      "id": "CROSS_PLANE_INCREMENTAL_SIGNAL",
+      "state": "UNPROVEN",
+      "falsifier": "AICR + k8s-aibom + existing signature/policy composition shows equal drift coverage and comparable cost on blinded real workloads"
+    },
+    {
+      "id": "TEMPORAL_CORRELATION_VALUE",
+      "state": "UNPROVEN",
+      "falsifier": "Existing upstream timestamps, inventory history and deployment policies cover the same replay/rollback and drift cases without an extra event graph"
+    },
+    {
+      "id": "EXECUTION_LEVEL_ATTESTATION",
+      "state": "UNPROVEN",
+      "falsifier": "No separately corroborated model execution evidence can be acquired; signatures alone only authenticate claims"
+    }
+  ]
+}

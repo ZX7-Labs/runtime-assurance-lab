@@ -46,3 +46,5 @@ jobs:
         run: python scripts/ci_smoke.py
       - name: Verify previous synthetic acceptance evidence (not a new benchmark)
         run: python scripts/check_gates.py
+      - name: Validate upstream research no-go report (not production approval)
+        run: python scripts/run_research_gate.py --verify-report results/research_gate.json

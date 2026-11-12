@@ -1,0 +1,59 @@
+{
+  "candidate_hypotheses": [
+    {
+      "falsifier": "AICR + k8s-aibom + existing signature/policy composition shows equal drift coverage and comparable cost on blinded real workloads",
+      "id": "CROSS_PLANE_INCREMENTAL_SIGNAL",
+      "state": "UNPROVEN"
+    },
+    {
+      "falsifier": "Existing upstream timestamps, inventory history and deployment policies cover the same replay/rollback and drift cases without an extra event graph",
+      "id": "TEMPORAL_CORRELATION_VALUE",
+      "state": "UNPROVEN"
+    },
+    {
+      "falsifier": "No separately corroborated model execution evidence can be acquired; signatures alone only authenticate claims",
+      "id": "EXECUTION_LEVEL_ATTESTATION",
+      "state": "UNPROVEN"
+    }
+  ],
+  "decision": "PAUSE_PRODUCT_BUILD",
+  "decision_is_production_approval": false,
+  "experiment": {
+    "cases": 600,
+    "same_input_reference_disagreements": 0,
+    "scope": "HISTORICAL_CLAIM_ONLY_SYNTHETIC",
+    "untrusted_source_post_gate": "UNKNOWN",
+    "upstream_binaries_executed": false
+  },
+  "limitations": [
+    "This gate reviews official source documentation, not executed upstream tools.",
+    "A signed upstream assertion is not physical GPU execution attestation.",
+    "The same-input synthetic comparator cannot establish product differentiation.",
+    "User-controlled inputs cannot establish independent trust or customer demand."
+  ],
+  "missing_independent_gates": [
+    "authentic_upstream_evidence",
+    "independently_anchored_provenance",
+    "representative_baseline_comparison",
+    "customer_value_validation"
+  ],
+  "next_action": "Obtain independently authenticated AICR/AIBOM evidence and authorized read-only cluster baseline; compare existing upstream composition before any product expansion.",
+  "reason": "UPSTREAM_OVERLAP_AND_INCREMENTAL_VALUE_UNPROVEN",
+  "schema": "ral-research-investment-v1",
+  "upstream_documented_capabilities": {
+    "GOOGLE_K8S_AIBOM": [
+      "Kubernetes AI workload inventory, CycloneDX 1.6 output, component/model evidence locators",
+      "Model signature trust-root and signer-identity controls for verified confidence tier",
+      "Ready/Stale status, digest resolution, kubectl aibom verify and external sinks"
+    ],
+    "NVIDIA_AICR": [
+      "Closed-world deployment bundle checksum and inventory verification",
+      "Sigstore attestation, trusted roots and creator identity pinning",
+      "Recipe evidence bundles binding recipe, snapshot, validator reports and BOM"
+    ],
+    "SIGSTORE_POLICY": [
+      "Artifact signature/bundle and transparency proof verification",
+      "Signer identity and policy enforcement via existing tools"
+    ]
+  }
+}
