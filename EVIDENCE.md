@@ -119,12 +119,52 @@ python scripts/check_gates.py
 - Independently fetched the new remote branch/tree and the complete contents of all 14 changed files: remote head matched `1727021761a8aff218e50683f859f0392932b9e9`, 40 tracked files, **14/14 changed contents exact text equal** to the locally tested M1 snapshot, with **0 mismatches**. No deploy, secret read, release or paid API used.
 - This paragraph is a subsequent evidence-only checkpoint; publishing it will create a new remote commit. The source commit above is independently verified regardless of the evidence-only commit ID. GitHub source commit authorization came from the user's explicit public-repository approval.
 
-## 11. M2 CPU-only public GitHub Actions — execution ledger (2026-11-12)
+## 11. M2 CPU-only GitHub Actions test harness — local verification (2026-11-12)
 
-**Starting verified checkpoint:** local source commit `e2f76c7`; connected public GitHub `main` `f0b53b03dcaf012f92b18bf21d96f915fa6ab5e2`; remote previously had 40 files and no Actions workflow. `PYTHONPATH=src python3 -m pytest -q` passed **73/73** (7.07s). The signed demo reverified with `DECISIONS_RECOMPUTED`; the stored synthetic acceptance report passed **7/7**, not re-benchmarked.
+**Checkpoint recovered:** local clean `main` at `e2f76c7` (source `d9ecd34`), GitHub public remote `main` `f0b53b03dcaf012f92b18bf21d96f915fa6ab5e2`. Before changes, `PYTHONPATH=src python3 -m pytest -q` -> **73 passed, 7.07s**; offline `demo` and `verify` -> `{ "verified": true, "reason": "DECISIONS_RECOMPUTED" }`; `python3 scripts/check_gates.py` -> **7/7 previous synthetic checks pass**. Existing GitHub tree had **zero** `.github/workflows/` paths. No live cluster or GPU access.
 
-**Design:** real NVIDIA AICR/k8s-aibom on-cluster G4 is still blocked (no approved cluster or authentic redacted evidence). Built an unprivileged GitHub Actions offline harness instead: `.github/workflows/offline-assurance.yml` (Python 3.11/3.13, standard ubuntu-24.04, main push/PR/manual triggers, 10-minute timeout, read-only `contents`, no retained checkout credential); `.github/ci-constraints.txt` (pinned distribution versions, *not* wheel hashes); `scripts/ci_smoke.py` (6 end-to-end synthetic checks). No GPU, deployment, cluster, secret, release, upload or paid runners. First-party action commit SHAs independently checked via official GitHub tags: checkout v7 `3d3c42e5aac5ba805825da76410c181273ba90b1`, setup-python v7 `6d4fd22b20465ccc0f7354476588e8df7c9ca0e0`. GitHub official docs confirm standard public runners are free: https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job .
+**Milestone chosen:** G4 (real AICR+Kubernetes comparison) is still blocked by lack of an approved cluster and real evidence. M2 automates existing nonprivileged, CPU-only validations on *free standard public-repository GitHub-hosted runners*; it is NOT a substitute for G4. GitHub official runner/billing docs checked 2026-11-12: https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job and https://docs.github.com/en/billing/concepts/product-billing/github-actions. The official GitHub action tag refs were fetched through the connected GitHub integration: `actions/checkout` v7 -> `3d3c42e5aac5ba805825da76410c181273ba90b1`; `actions/setup-python` v7 -> `6d4fd22b20465ccc0f7354476588e8df7c9ca0e0`. Both are **pinned commit SHAs** in the new workflow, not floating tags.
 
-**Actual local runs and fix:** `PYTHONPATH=src python3 scripts/ci_smoke.py` **PASS** (clean, model drift, stale, AIBOM UNKNOWN, signed demo verified, tamper rejected). `PYTHONPATH=src python3 -m pytest -q` **73 passed (6.76s)**; `python3 scripts/check_gates.py` **7/7 historical synthetic gates pass**. Initial isolated `python3 -m venv --system-site-packages /tmp/ral-m2-venv` and `pip install --no-index --no-build-isolation --no-deps -e .` failed because the venv based on /usr Python could not import `setuptools.build_meta` from the original /opt/pyvenv environment. Added a local-only `.pth` to expose **preinstalled** packages; retried the fully offline install successfully; inside venv `python scripts/ci_smoke.py` PASS, `python -m pytest -q` **73 passed (0.83s)**, `python -m compileall -q src tests scripts` PASS. Parsed YAML via installed PyYAML BaseLoader: triggers, read-only token, SHA pins, matrix, runner and timeout PASS. Final `pytest -q` **73 passed (6.78s)**, `git diff --check` passed, scan of eight changed files found no obvious private key/token prefix. Local checkpoint commit `ee6d679` clean.
+**Files:** `.github/workflows/offline-assurance.yml` (push to `main`, pull requests, manual dispatch, `contents: read`, `persist-credentials: false`, no secrets, standard `ubuntu-24.04`, Python 3.11/3.13, timeout 10min per job); `.github/ci-constraints.txt` (version constraints for local baseline libraries, NOT hashes); `scripts/ci_smoke.py` (six synthetic process-level checks, including expected AIBOM `UNKNOWN` and modified signed journal rejection). Updated `PLAN.md`, `DECISIONS.md`, `README.md`, `SECURITY_REVIEW.md` to separate hosted CI from runtime validation. No new runtime dependencies or deployment paths.
 
-**Independent critical review limits:** this is implementer review, *not* external security assessment. Python 3.11 and hosted GitHub Actions run have not yet been exercised in this container; do not claim remote CI success without a completed run. PyPI install has exact version constraints, not checksum verification. Even a passing hosted job is only synthetic Python behavior, not a real-world drift, GPU, trusted-clock, anchoring, or K8s overhead test. G4 and G5 remain blocked; no production-readiness claim.
+**Commands actually executed:**
+
+```sh
+PYTHONPATH=src python3 -m pytest -q
+# before: 73 passed, 7.07s
+PYTHONPATH=src python3 scripts/ci_smoke.py
+# PASS: clean, drift, stale, aibom-unknown, signed-demo, tamper-rejected
+PYTHONPATH=src python3 -m pytest -q
+# after local implementation: 73 passed, 6.76s
+python3 scripts/check_gates.py
+# 7/7 historical stored synthetic pilot gates passed; did NOT rerun microbenchmarks
+python3 -m venv --system-site-packages /tmp/ral-m2-venv
+/tmp/ral-m2-venv/bin/python -m pip install --no-index --no-build-isolation --no-deps -e .
+# initial ERROR: BackendUnavailable: Cannot import setuptools.build_meta;
+# environment-only problem: base /usr Python venv could not see parent /opt/pyvenv packages.
+printf '/opt/pyvenv/lib/python3.13/site-packages\n' > /tmp/ral-m2-venv/lib/python3.13/site-packages/current-python-packages.pth
+/tmp/ral-m2-venv/bin/python -m pip install --no-index --no-build-isolation --no-deps -e .
+# PASS, fully offline package/editable installation using preinstalled build tools
+/tmp/ral-m2-venv/bin/python scripts/ci_smoke.py
+# PASS, no PYTHONPATH supplied
+/tmp/ral-m2-venv/bin/python -m pytest -q
+# 73 passed, 0.83s (shared package dependencies and warm runtime caches)
+/tmp/ral-m2-venv/bin/python -m compileall -q src tests scripts
+# PASS
+python3 scripts/check_gates.py
+# 7/7 stored synthetic checks pass
+# Local PyYAML BaseLoader parse/inspection of workflow, commit-SHA pin lengths,
+# workflow triggers, token scope, timeout and Python matrix -> PASS.
+```
+
+**Critical review / limits:** GitHub-hosted Python 3.11 was not available in this container; Python 3.11 and actual GitHub-hosted execution are **not yet verified**, only statically configured. CPU-only GitHub workflow does not test GPUs, k8s-aibom controller installation, AICR runtime exports, Cosign integration, Kubernetes latency, or user/environment secrets. GitHub `pull_request` runs potentially adversarial code with read-only token and no repo secrets; PyPI/setuptools artifacts have pinned versions but not hash locked (supply-chain risk). No secrets were read, no deployment created, no license added, no paid runner selected. Do not claim a hosted CI success until an actual job result is inspected.
+
+
+## 12. Verified GitHub-hosted CPU-only CI outcome (2026-11-12)
+
+- Authorized public GitHub source commit on `main`: `ac43998a9ebdefb8e99a6bafd6046d5d928c5f59` (non-force update against prior head `f0b53b03dcaf012f92b18bf21d96f915fa6ab5e2`). Fetched branch and eight published file blobs, including the exact local hashes of `.github/workflows/offline-assurance.yml`, `.github/ci-constraints.txt`, and `scripts/ci_smoke.py`. GitHub read/write verification used the connected GitHub API; no production rollout.
+- Official GitHub Actions run: https://github.com/ZX7-Labs/runtime-assurance-lab/actions/runs/43155730493 ; head SHA matched `ac43998a9ebdefb8e99a6bafd6046d5d928c5f59`; status **completed**, conclusion **success**. Retrieved both job objects, steps and full job logs.
+- **Python 3.11:** 73 pytest cases passed in **1.14s**, separate six-case offline smoke `pass`, historical synthetic gate JSON `passed=true`; build/install/compile/verification steps successful.
+- **Python 3.13:** 73 pytest cases passed in **1.07s**, separate six-case offline smoke `pass`, historical synthetic gate JSON `passed=true`; build/install/compile/verification steps successful.
+- This proves two hosted CPU Python test environments passed the committed synthetic validation suite. It **does not** provide authentic NVIDIA AICR/k8s-aibom collection, verified model execution, a real cluster/GPU latency benchmark, a tamper-proof external trust anchor, or market validation. G4/G5 remain blocked and no production approval was granted. Hosted test artifacts and logs are public and must only contain synthetic data.
+- This section is a subsequent evidence-only source update; its commit creates another public CI run and must be verified separately. No new synthetic benchmark values or deployment claims are introduced.
