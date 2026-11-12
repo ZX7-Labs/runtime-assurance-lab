@@ -208,3 +208,11 @@ Repository owner authorized publishing the existing original code as open source
 - **Selected:** compress the README around an honest one-sentence question, quick start, scoped trust diagram, five concrete contribution paths and one evidence/limits summary. Keep links working and use GitHub-native Mermaid, not a separate hosted web UI. Replace demo `assert` gates with explicit errors, and test both rejection branches under an optimized child Python process. Add small local ignored-secret filename patterns, clearly not a substitute for secret scanning.
 - **Acceptance:** no material claims change; no authenticated `OK` from raw JSON; no new collector, dependency, external service, UI deployment or signing authority; all linked local files resolve, both optimized-path negative tests pass, existing Python 3.11/3.13 suites, 16 synthetic CLI smoke checks and `PAUSE_PRODUCT_BUILD` gate remain green. Verify exact remote commit and log final run.
 - **Deferred owner-side actions:** set GitHub About description and accurate topics, optionally disable unused Wiki, verify private vulnerability reporting and consider GitHub branch protection and Dependabot only when maintainer capacity allows. Do not assert those settings were changed.
+
+
+## M14 — public source hygiene check (2026-11-13)
+
+- Inspect the tracked repository files, public issue bodies and Git commit authors/messages for unintended authoring-tool boilerplate or promises of outside review. Preserve domain-appropriate references to AI workloads and all licenses/credits.
+- Remove the redundant root-level internal workflow guide without losing the technical guardrails already present in CONTRIBUTING, SECURITY_REVIEW, docs/ARCHITECTURE and this plan. Do not rewrite Git history.
+- Correct review provenance wording so internal checks and CI are not represented as independent outside assurance. No source logic, benchmark, licence, API or trusted execution proof changes.
+- Verify the changed tree is limited to the intended documentation path deletion plus the existing decision/evidence records; run both Python CI matrices and confirm the research investment gate remains PAUSE_PRODUCT_BUILD.
