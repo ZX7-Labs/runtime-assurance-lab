@@ -27,4 +27,10 @@ PYTHONPATH=src pytest -q
 - `EVIDENCE.md`: executed commands/results and blockers, without claims of live validation.
 - `results/`: machine-readable example output and benchmark, including an offline synthetic AIBOM adapter processing baseline (`python scripts/bench_aibom_adapter.py`).
 
+## Public GitHub Actions — offline test automation
+
+`.github/workflows/offline-assurance.yml` runs on pushes to `main`, pull requests, and manual dispatch. It uses free **standard** Linux runners, Python 3.11/3.13, pinned checkout/setup-python action SHAs, a read-only repository token, and no retained credentials, secrets, deployment, external cluster, GPUs or paid runners. It installs version-constrained test dependencies from PyPI; constraints are **not** hash-locked.
+
+The job runs `python -m pytest -q`, compile checks, `python scripts/ci_smoke.py` and `python scripts/check_gates.py`. The smoke executes real Python processes using **synthetic** fixtures, including expected `UNKNOWN` for AIBOM and rejection of a modified signed journal. `check_gates.py` checks **stored historical** synthetic benchmark output; it does not benchmark each runner or prove runtime assurance. A green badge demonstrates the code path on hosted CI, not a GPU/Kubernetes validation.
+
 **Publication authorization:** On 2026-11-12 the user explicitly approved the existing public repository and application of the work. Public repository visibility does **not** grant a reuse/distribution license. This code is an offline, synthetic prototype only; real-cluster data collection, release packaging, paid services and production deployment remain unauthorized.

@@ -29,3 +29,10 @@ Default `json.loads` accepted duplicate keys with last-key-wins semantics and no
 - **Portability:** simple `json.dumps(sort_keys=True)` is a local canonical encoding contract, not RFC 8785 or Sigstore's protocol. Do not interoperate or advertise it as Sigstore-compliant.
 
 Review disposition: acceptable **only** as a synthetic local research checkpoint. No production sign-off.
+
+## S-007 — CI trust boundary (M2, 2026-11-12)
+
+- Public PRs can execute untrusted repository test code. This CI deliberately uses only `pull_request`/`push`, a read-only `GITHUB_TOKEN`, `persist-credentials: false`, no repository secrets, no `pull_request_target`, no external attestations, and no GitHub write scopes. An attacker can still consume allowed public CI resources; branch rules and fork approval are externally controlled.
+- First-party actions are pinned to Git object commit SHAs fetched from official GitHub tags (2026-11-12); updates require explicit review. Standard runners are free for public repositories according to GitHub documentation, but only standard `ubuntu-24.04` is used, never a paid larger runner.
+- PyPI packages and setuptools build dependencies are version-constrained but **not checksum-locked**; a compromised package index/artifact or malicious contributor may still affect job execution. CI does not run with secrets, but these are not sufficient controls for trusted production publishing. No SBOM, provenance attestation or reproducible wheel builds are claimed.
+- A passing CI pipeline verifies synthetic source behavior and deterministic smoke contracts only; it does not authenticate AICR exports, provide an independently held journal checkpoint or prove GPU workload execution.

@@ -1,0 +1,48 @@
+name: Offline assurance checks
+
+# CPU-only checks; no cluster, registry authentication, secrets, or releases.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: offline-assurance-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline:
+    name: Python ${{ matrix.python-version }} offline proof
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.13']
+    env:
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PIP_NO_INPUT: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout without retained token
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7; source tag verified 2026-11-12
+        with:
+          persist-credentials: false
+      - name: Install pinned Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7; source tag verified 2026-11-12
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install constrained test dependencies
+        run: python -m pip install -c .github/ci-constraints.txt -e '.[test]'
+      - name: Unit, integration, adversarial and synthetic performance checks
+        run: python -m pytest -q
+      - name: Compile Python modules
+        run: python -m compileall -q src tests scripts
+      - name: Offline end-to-end contract and tampering checks
+        run: python scripts/ci_smoke.py
+      - name: Verify previous synthetic acceptance evidence (not a new benchmark)
+        run: python scripts/check_gates.py
