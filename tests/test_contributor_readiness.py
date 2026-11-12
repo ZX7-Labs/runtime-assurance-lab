@@ -81,7 +81,9 @@ def test_reproduction_issue_form_preserves_private_data_boundary() -> None:
 def test_research_invitation_has_no_product_or_community_claim() -> None:
     text = (ROOT / "docs/COMMUNITY_LAUNCH.md").read_text(encoding="utf-8")
     assert "NOT production security software" in text
-    assert "not assume they were changed" in text
+    assert "description is empty" in text
+    assert "topics are empty" in text
+    assert "none of these settings was changed" in text
     assert "Do not buy stars" in text
     assert "No proof of real model execution" in text or "not a claim of product availability" in text
     guide = (ROOT / "docs/CONTRIBUTOR_PATHS.md").read_text(encoding="utf-8")
