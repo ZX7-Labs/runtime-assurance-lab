@@ -1,0 +1,45 @@
+name: Vendor native CPU baseline (G4 research, NOT G4 completion)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/native-upstream-baseline.yml'
+      - 'scripts/g4_vendor_native_baseline.py'
+      - 'tests/test_g4_vendor_native_baseline.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-releases:
+    name: Verify pinned upstream releases using vendor-native tools
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+    steps:
+      - name: Checkout without retained credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up pinned Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: '3.13'
+      - name: Verify release digests, Google provenance and NVIDIA catalog with native binaries
+        run: python scripts/g4_vendor_native_baseline.py --output "$RUNNER_TEMP/g4-vendor-native.json"
+      - name: Reconfirm NOT a live G4 or product GO
+        run: |
+          python - "$RUNNER_TEMP/g4-vendor-native.json" <<'PY'
+          import json, sys
+          report=json.load(open(sys.argv[1]))
+          assert report['decision']=='PAUSE_PRODUCT_BUILD'
+          assert report['g4_completed'] is False and report['gpu_execution_verified'] is False
+          assert report['same_workload_upstream_evidence'] is False
+          assert report['google_release_attestation']['passed'] is True
+          assert report['nvidia_embedded_catalog_verification']['passed'] is True
+          print('VENDOR_NATIVE_CPU_BASELINE_PASS__G4_STILL_BLOCKED')
+          PY
