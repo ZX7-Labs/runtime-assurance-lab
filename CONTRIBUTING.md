@@ -9,6 +9,8 @@ Thank you for helping test a hard question: **does a separate cross-plane assura
 3. For a small bug or regression, use the **Bug report** template, attach a minimized non-sensitive reproducer and state the expected `OK`/`DRIFT`/`UNKNOWN` behavior.
 4. Fork the public repository, create a focused branch, and submit a pull request. Maintainers review changes; submissions are not automatically accepted.
 
+**Available starting points:** [#1 Portability / quickstart](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/1), [#2 Equal-input upstream research](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2), [#3 Public threat-model review](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3). For a new idea use the issue templates.
+
 ## Local development
 
 ```bash

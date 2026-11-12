@@ -96,6 +96,8 @@ Operator intent (JSON)        Upstream recipe / AIBOM export (JSON)
 
 **Good first contributions:** reproduce a failing test on a clean machine; improve malicious-input regression coverage; tighten error messages without converting `UNKNOWN` to `OK`; review the upstream comparison protocol; or contribute independent, citable research on a concrete gap.
 
+**Pick an open task:** [#1 · reproduce the quickstart](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/1) (beginner-friendly), [#2 · independent upstream comparison](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/2), or [#3 · trust-boundary review](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/3).
+
 Start with [CONTRIBUTING.md](CONTRIBUTING.md), the [architecture](docs/ARCHITECTURE.md), and the [research roadmap](docs/ROADMAP.md). Open a [research proposal](https://github.com/ZX7-Labs/runtime-assurance-lab/issues/new/choose) before proposing a large feature. Do not publish credentials, private cluster exports, private signing keys or sensitive model information in an issue/PR.
 
 Development requires **evidence, not confidence**: run `python -m pytest -q`, `python scripts/ci_smoke.py`, `python scripts/check_gates.py` (stored historical evidence), and `python scripts/run_research_gate.py --verify-report results/research_gate.json` from the repository root. Real G4 work requires authorization and independent custody. [Security reporting](SECURITY.md).
