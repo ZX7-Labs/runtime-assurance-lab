@@ -5,9 +5,20 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "runtime-assurance-lab"
 version = "0.1.0"
-description = "Local research PoC: signed cross-plane AI runtime evidence correlation"
+description = "Offline research on AI workload intent, observation trust and cross-plane evidence"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+keywords = ["research", "ai-workloads", "kubernetes", "provenance", "supply-chain", "security"]
+classifiers = ["Development Status :: 2 - Pre-Alpha", "Intended Audience :: Developers", "Topic :: Software Development :: Testing", "Programming Language :: Python :: 3.11", "Programming Language :: Python :: 3.13"]
 requires-python = ">=3.11"
 dependencies = ["cryptography>=42,<48"]
+
+[project.urls]
+Homepage = "https://github.com/ZX7-Labs/runtime-assurance-lab"
+Repository = "https://github.com/ZX7-Labs/runtime-assurance-lab"
+Issues = "https://github.com/ZX7-Labs/runtime-assurance-lab/issues"
+Documentation = "https://github.com/ZX7-Labs/runtime-assurance-lab/blob/main/docs/ARCHITECTURE.md"
 
 [project.optional-dependencies]
 test = ["pytest>=8,<10"]

@@ -10,3 +10,19 @@ __pycache__/
 *.secrets.*
 coverage.xml
 htmlcov/
+
+# Generated local demo outputs; regenerate with `ral demo`.
+results/demo/
+
+# Local state, wheels and editor/build caches.
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+dist/
+build/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.DS_Store

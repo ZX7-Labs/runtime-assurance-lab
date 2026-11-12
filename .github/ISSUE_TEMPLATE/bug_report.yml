@@ -1,0 +1,28 @@
+name: Bug report
+labels: []
+description: Report a bug using only synthetic or public test evidence. Security vulnerabilities must be reported privately.
+body:
+  - type: markdown
+    attributes:
+      value: "**Do not post sensitive data or security exploits.** Follow [SECURITY.md](https://github.com/ZX7-Labs/runtime-assurance-lab/blob/main/SECURITY.md) for private disclosure."
+  - type: input
+    id: version
+    attributes:
+      label: Commit / Python version
+      placeholder: "main @ <SHA>, Python 3.13"
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction (synthetic inputs only)
+      description: Commands and minimal safe example
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs actual result
+      description: Include verdict, exit code and relevant logs
+    validations:
+      required: true

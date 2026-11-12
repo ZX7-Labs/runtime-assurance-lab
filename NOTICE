@@ -1,0 +1,9 @@
+Runtime Assurance Lab
+Copyright 2026 ZX7 Labs contributors.
+
+Runtime Assurance Lab is an independent community research project. It is not
+an NVIDIA, Google, or Sigstore product, and those projects do not endorse it.
+Third-party names are used only to identify interoperability research.
+
+This repository does not vendor the upstream NVIDIA AICR, Google k8s-aibom,
+or Sigstore source code. Dependencies remain subject to their own licenses.

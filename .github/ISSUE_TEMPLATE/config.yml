@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security reporting
+    url: https://github.com/ZX7-Labs/runtime-assurance-lab/security
+    about: Do not publish vulnerabilities or secrets in a public issue. Use private vulnerability reporting when enabled.
+  - name: Contribution guide
+    url: https://github.com/ZX7-Labs/runtime-assurance-lab/blob/main/CONTRIBUTING.md
+    about: How to test, review and contribute reproducible work.

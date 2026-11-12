@@ -1,0 +1,35 @@
+name: Research proposal / upstream gap
+labels: []
+description: Propose a focused experiment before expanding product functionality.
+body:
+  - type: markdown
+    attributes:
+      value: "**Current decision: PAUSE_PRODUCT_BUILD.** A feature proposal needs a testable reason it cannot be achieved by existing vendor tooling. Do not include real sensitive workload data."
+  - type: textarea
+    id: gap
+    attributes:
+      label: Exact unmet requirement
+      description: State the specific claim and who would use it
+    validations:
+      required: true
+  - type: textarea
+    id: upstream
+    attributes:
+      label: Existing-tool comparison
+      description: Which AICR, k8s-aibom, Sigstore/policy capabilities have been checked? Provide pinned links.
+    validations:
+      required: true
+  - type: textarea
+    id: falsification
+    attributes:
+      label: Equal-input experiment and stop criteria
+      description: A negative control, adversarial case and how the proposal could be proved unnecessary
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Permissions, trust boundaries and data availability
+      description: Offline reproducibility, independent provenance and any external prerequisites
+    validations:
+      required: true

@@ -1,5 +1,7 @@
 # Official-source audit as checked 2026-11-12
 
+**Licensing update:** the host project now has its own [Apache-2.0 LICENSE](LICENSE) and [NOTICE](NOTICE). Earlier statements below about *its* license being undecided record the previous state; third-party code remains separately licensed.
+
 All links below are primary vendor or upstream-project sources. Source code was **not** copied into this repository. SPDX labels are verified on upstream project pages; full transitive license / export-control / trademark review is still outstanding.
 
 | Project | Existing coverage (avoid duplication) | Documented integration point | License |

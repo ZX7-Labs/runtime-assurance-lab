@@ -5,7 +5,7 @@
 - Sequence: inspect -> design -> implement -> unit/integration/adversarial/performance tests -> fix -> retest -> critical review -> evidence checkpoint; verify committed remote tree after any authorized source push. Append commands, results, unknowns to `EVIDENCE.md`.
 - Trust boundaries: intent from AICR-qualified exports; observations from opted-in k8s-aibom; signatures from Sigstore or explicitly trusted signers; policy from an externally pinned version. No source may self-assert its own trust root. Unknown/expired data cannot pass assurance.
 - Use typed, explicit JSON contracts; `src/runtime_assurance_lab` remains free of Kubernetes SDK imports and networking. Adapters belong at edges; fail closed on input ambiguity.
-- Do not copy upstream controller, Sigstore, or policy-engine implementations. Check upstream documentation/licenses before adding dependencies. No repository-wide license selected for this public research prototype; public visibility alone is not an open-source license.
+- Do not copy upstream controller, Sigstore, or policy-engine implementations. Check upstream documentation/licenses before adding dependencies. Repository is now Apache-2.0 licensed (LICENSE + NOTICE); new contributions must preserve third-party rights. Public visibility alone previously did not grant reuse rights.
 - Reproduce: `PYTHONPATH=src pytest -q`; `PYTHONPATH=src python -m runtime_assurance_lab.cli demo`; `PYTHONPATH=src python -m runtime_assurance_lab.cli benchmark`.
 - Stop if cross-plane use case is upstream-complete or meaningful real-world differentiation cannot be demonstrated with authorized, non-sensitive evidence. Do not claim production readiness or a market fit.
 
