@@ -1,0 +1,130 @@
+{
+  "by_scenario": {
+    "clean": {
+      "fully_observable": true,
+      "outcomes": {
+        "OK": 50
+      },
+      "truth": "clean"
+    },
+    "future_hidden_drift": {
+      "fully_observable": false,
+      "outcomes": {
+        "UNKNOWN": 50
+      },
+      "truth": "drift"
+    },
+    "image_digest": {
+      "fully_observable": true,
+      "outcomes": {
+        "DRIFT": 50
+      },
+      "truth": "drift"
+    },
+    "missing_clean": {
+      "fully_observable": false,
+      "outcomes": {
+        "UNKNOWN": 50
+      },
+      "truth": "clean"
+    },
+    "missing_hidden_drift": {
+      "fully_observable": false,
+      "outcomes": {
+        "UNKNOWN": 50
+      },
+      "truth": "drift"
+    },
+    "model_digest": {
+      "fully_observable": true,
+      "outcomes": {
+        "DRIFT": 50
+      },
+      "truth": "drift"
+    },
+    "model_ref": {
+      "fully_observable": true,
+      "outcomes": {
+        "DRIFT": 50
+      },
+      "truth": "drift"
+    },
+    "recipe_digest": {
+      "fully_observable": true,
+      "outcomes": {
+        "DRIFT": 50
+      },
+      "truth": "drift"
+    },
+    "stale_clean": {
+      "fully_observable": false,
+      "outcomes": {
+        "STALE": 50
+      },
+      "truth": "clean"
+    },
+    "stale_hidden_drift": {
+      "fully_observable": false,
+      "outcomes": {
+        "STALE": 50
+      },
+      "truth": "drift"
+    },
+    "unresolved_clean": {
+      "fully_observable": false,
+      "outcomes": {
+        "UNKNOWN": 50
+      },
+      "truth": "clean"
+    },
+    "unverified_clean": {
+      "fully_observable": false,
+      "outcomes": {
+        "UNKNOWN": 50
+      },
+      "truth": "clean"
+    }
+  },
+  "complete_claim_definition": "Fully observable in this study means fresh, complete *synthetic* claims with a verified label; no source authentication or model-execution proof was performed",
+  "counts": {
+    "cases": 600,
+    "complete_input_reference_disagreements": 0,
+    "confirmed_drift": 200,
+    "false_drift_on_clean": 0,
+    "fully_observable": 250,
+    "latent_drift": 350,
+    "naive_false_ok": 450,
+    "observable_drift": 200,
+    "trials": 50,
+    "unsupported_ok": 0
+  },
+  "definition": "DRIFT is a reported mismatch, NOT proof of malicious or executed runtime drift",
+  "interpretation": {
+    "falsification_rule": "Stop claiming novelty if representative authorized upstream tool composition matches coverage and overhead",
+    "negative_control": "Same-input independent reference matches; no incremental detection is established by this fixture study",
+    "product_differentiation_proven": false,
+    "upstream_tools_executed": false
+  },
+  "local_preloaded_processing_p95_us": {
+    "evaluator": 2.223,
+    "same_input_reference": 1.703
+  },
+  "metrics": {
+    "complete_input_reference_disagreement_rate": 0.0,
+    "false_drift_rate_on_clean": 0.0,
+    "observable_drift_recall": 1.0,
+    "overall_latent_drift_recall": 0.5714285714285714,
+    "unsupported_ok_rate": 0.0
+  },
+  "sample_limitation": "Trial repetitions change workload identifiers, not underlying conditions; this is NOT a statistically representative workload distribution",
+  "scope": "deterministic synthetic negative controls; not actual NVIDIA/Google/Sigstore performance",
+  "source_forgery_probe": {
+    "assumed_hidden_truth": "drift despite counterfeit complete matching observation",
+    "reported_status": "OK",
+    "root_cause": "verified is a caller-provided claim, not independently authenticated provenance",
+    "security_gate_passed": false,
+    "unsafe_ok_possible_when_input_source_is_untrusted": true
+  },
+  "timing_method": "five ordered rounds of preloaded same-process calls via perf_counter_ns, no traced heap; no file I/O, Kubernetes, or GPU",
+  "truth_source": "predefined synthetic scenario construction (not a tool result)"
+}

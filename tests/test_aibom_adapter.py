@@ -120,3 +120,15 @@ def test_valid_checksum_does_not_make_nonsense_a_valid_bom():
     source['status']['bomHash'] = doc['sha256']
     with pytest.raises(ValueError, match='not supported CycloneDX'):
         normalize_aibom(source)
+
+
+def test_inline_bom_exponent_overflow_rejected_even_with_valid_hash():
+    source = deepcopy(SOURCE)
+    raw = b'{"bomFormat":"CycloneDX","specVersion":"1.6","components":[{"risk":1e999}]}'
+    doc = source['status']['bomDocument']
+    doc['inline']['data'] = base64.b64encode(raw).decode('ascii')
+    doc['size'] = len(raw)
+    doc['sha256'] = sha256(raw).hexdigest()
+    source['status']['bomHash'] = doc['sha256']
+    with pytest.raises(ValueError, match='nonfinite'):
+        normalize_aibom(source)

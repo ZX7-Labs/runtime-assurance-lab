@@ -1,0 +1,16 @@
+{
+  "cpu_total_ms": 905.545807,
+  "create": {
+    "max_us": 7483.141,
+    "median_us": 303.335,
+    "p95_us": 512.853
+  },
+  "dataset": "preloaded synthetic sources, 1000 iterations each; no Kubernetes, IO, signatures or real latency",
+  "iterations": 1000,
+  "python_tracemalloc_peak_bytes": 134781,
+  "replay": {
+    "max_us": 7755.442,
+    "median_us": 450.947,
+    "p95_us": 715.821
+  }
+}

@@ -12,10 +12,10 @@ import base64
 import binascii
 from dataclasses import dataclass
 from hashlib import sha256
-import json
 from typing import Any
 
 from .contracts import Observation, timestamp, string, workload
+from .json_strict import loads_strict
 
 API_VERSION = "aibom.k8saibom.dev/v1beta1"
 SOURCE_VERSION = "k8s-aibom/v1.6.2"
@@ -69,20 +69,10 @@ def _check_inline_document(status: dict) -> list[str]:
             raise ValueError("invalid inline BOM base64") from exc
         if len(raw) > MAX_INLINE_BOM_BYTES or sha256(raw).hexdigest() != digest:
             raise ValueError("inline BOM exceeds size limit or hash mismatch")
-        def reject_duplicates(pairs):
-            obj = {}
-            for key, value in pairs:
-                if key in obj:
-                    raise ValueError("duplicate BOM JSON key")
-                obj[key] = value
-            return obj
-        def reject_nonfinite(_value):
-            raise ValueError("nonfinite BOM JSON value")
         try:
-            bom = json.loads(raw.decode("utf-8"), object_pairs_hook=reject_duplicates,
-                             parse_constant=reject_nonfinite)
-        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-            raise ValueError("inline BOM is not valid UTF-8 JSON") from exc
+            bom = loads_strict(raw)
+        except (UnicodeDecodeError, RecursionError) as exc:
+            raise ValueError("inline BOM is not valid strict UTF-8 JSON") from exc
         if not isinstance(bom, dict) or bom.get("bomFormat") != "CycloneDX" or bom.get("specVersion") != "1.6":
             raise ValueError("inline BOM document is not supported CycloneDX 1.6")
         if type(document.get("size")) is not int or document["size"] != len(raw):

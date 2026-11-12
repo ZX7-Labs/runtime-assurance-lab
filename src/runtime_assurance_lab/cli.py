@@ -11,37 +11,40 @@ from .evaluate import POLICY_VERSION, evaluate
 from .evidence import append, canonical, generate_signer, head, sha, verify, verify_decision_semantics
 from .bench import run, FIXED_NOW
 from .aibom_adapter import normalize_aibom
+from .aicr_adapter import MAX_RECIPE_BYTES, pin_recipe
+from .json_strict import loads_strict
+from .crossplane_receipt import make_receipt, replay_receipt
 
 
 # Bound local inputs: the PoC has no streaming parser or service-level load shedding.
 MAX_JSON_BYTES = 8 * 1024 * 1024
 
 
-def _reject_duplicate_keys(pairs):
-    result = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValueError(f"duplicate JSON key: {key!r}")
-        result[key] = value
-    return result
-
-
-def _reject_nonfinite(value):
-    raise ValueError(f"nonfinite JSON value: {value}")
+def read_bytes(path: Path, limit: int = MAX_JSON_BYTES) -> bytes:
+    # Bounded read, not a separate stat + unbounded read (TOCTOU growth risk).
+    with path.open("rb") as stream:
+        data = stream.read(limit + 1)
+    if len(data) > limit:
+        raise ValueError(f"input exceeds {limit} bytes")
+    return data
 
 
 def read_json(path: Path):
-    if path.stat().st_size > MAX_JSON_BYTES:
-        raise ValueError(f"JSON input exceeds {MAX_JSON_BYTES} bytes")
-    # JSON's default last-key-wins behavior is unacceptable for signed evidence.
-    return json.loads(path.read_text(encoding="utf-8"),
-                      object_pairs_hook=_reject_duplicate_keys,
-                      parse_constant=_reject_nonfinite)
+    return loads_strict(read_bytes(path))
 
 
 def dump(path: Path, data):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(json.dumps(data, sort_keys=True, indent=2, ensure_ascii=False).encode()+b"\n")
+
+
+def write_new_json(path: Path, data) -> None:
+    """Receipt outputs must never overwrite source evidence or prior checkpoints."""
+    encoded = (json.dumps(data, sort_keys=True, indent=2, ensure_ascii=False) + "\n").encode("utf-8")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    # Exclusive creation refuses both existing files and existing symlinks.
+    with path.open("xb") as stream:
+        stream.write(encoded)
 
 
 def evaluation(intent_path: Path, observation_path: Path, at: datetime):
@@ -95,6 +98,22 @@ def main(argv=None) -> int:
     a.add_argument("--intent", required=True, type=Path)
     a.add_argument("--aibom", required=True, type=Path)
     a.add_argument("--now", required=True, help="timezone-aware ISO-8601")
+    c = sub.add_parser("correlate-offline", help="Bind pinned AICR RecipeResult bytes to an offline AIBOM CR (never proves deployment)")
+    c.add_argument("--intent", required=True, type=Path)
+    c.add_argument("--recipe", required=True, type=Path)
+    c.add_argument("--expected-recipe-sha256", required=True)
+    c.add_argument("--aibom", required=True, type=Path)
+    c.add_argument("--now", required=True)
+    r = sub.add_parser("receipt-offline", help="Write a replayable receipt for untrusted AICR/AIBOM files; no attestation")
+    rv = sub.add_parser("replay-offline", help="Recompute a receipt using independent time, pin, and exact raw source files")
+    for cmd in (r, rv):
+        cmd.add_argument("--intent", required=True, type=Path)
+        cmd.add_argument("--recipe", required=True, type=Path)
+        cmd.add_argument("--expected-recipe-sha256", required=True)
+        cmd.add_argument("--aibom", required=True, type=Path)
+        cmd.add_argument("--now", required=True)
+    r.add_argument("--output", required=True, type=Path)
+    rv.add_argument("--receipt", required=True, type=Path)
     d = sub.add_parser("demo", help="Generate synthetic signed journal and untrusted demo checkpoint")
     d.add_argument("--fixtures", type=Path, default=Path("fixtures"))
     d.add_argument("--output", type=Path, default=Path("results/demo"))
@@ -119,6 +138,38 @@ def main(argv=None) -> int:
             result = {**decision.to_dict(), "adapter": {"source_version": adapted.source_version,
                          "limitations": list(adapted.limitations)}}
             code = 0 if decision.status == "OK" else 2
+        elif args.action == "correlate-offline":
+            intent = Intent.parse(read_json(args.intent))
+            with args.recipe.open("rb") as stream:
+                raw_recipe = stream.read(MAX_RECIPE_BYTES + 1)
+            recipe = pin_recipe(raw_recipe, args.expected_recipe_sha256, intent)
+            adapted = normalize_aibom(read_json(args.aibom))
+            finding = evaluate(intent, adapted.observation, now=timestamp(args.now))
+            result = {**finding.to_dict(), "sources": {
+                "aicr": {"source_version": recipe.source_version, "sha256": recipe.sha256,
+                         "component_count": len(recipe.component_names),
+                         "limitations": list(recipe.limitations)},
+                "aibom": {"source_version": adapted.source_version,
+                          "limitations": list(adapted.limitations)}},
+                "scope": "offline bytes and untrusted CR claims; no execution/attestation proof"}
+            code = 0 if finding.status == "OK" else 2
+        elif args.action in ("receipt-offline", "replay-offline"):
+            sources = {"intent_bytes": read_bytes(args.intent),
+                       "recipe_bytes": read_bytes(args.recipe, MAX_RECIPE_BYTES),
+                       "aibom_bytes": read_bytes(args.aibom),
+                       "expected_recipe_sha256": args.expected_recipe_sha256,
+                       "trusted_now": args.now}
+            if args.action == "receipt-offline":
+                record = make_receipt(**sources)
+                write_new_json(args.output, record)
+                result = {"receipt_written": str(args.output), "status": record["decision"]["status"],
+                          "scope": "untrusted offline data; externally anchor inputs and pin before reliance"}
+                code = 0  # successful receipt creation, NOT assurance OK
+            else:
+                ok, reason = replay_receipt(read_json(args.receipt), **sources)
+                result = {"verified_replay": ok, "reason": reason,
+                          "scope": "source-byte and semantic replay only; no authenticity or runtime attestation"}
+                code = 0 if ok else 2
         elif args.action == "demo":
             result = demo(args.fixtures, args.output)
             code = 0

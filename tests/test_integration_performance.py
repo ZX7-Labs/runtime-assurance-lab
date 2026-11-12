@@ -1,9 +1,11 @@
 import json
+import pytest
 import os
 from pathlib import Path
 import subprocess
 import sys
 from runtime_assurance_lab.bench import run
+from runtime_assurance_lab.cli import read_json
 
 ROOT=Path(__file__).resolve().parents[1]
 ENV={**os.environ,'PYTHONPATH':str(ROOT/'src')}
@@ -78,3 +80,10 @@ def test_cli_invalid_ambiguous_json_fails_closed(tmp_path):
                   '--now','2026-11-12T03:25:00Z')
     assert result.returncode==3
     assert 'duplicate JSON key' in result.stderr
+
+
+def test_strict_file_json_rejects_finite_exponent_overflow(tmp_path):
+    source = tmp_path / 'overflow.json'
+    source.write_text('{"nested":{"value":1e999}}', encoding='utf-8')
+    with pytest.raises(ValueError, match='nonfinite'):
+        read_json(source)

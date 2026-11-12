@@ -1,0 +1,9 @@
+{
+  "cpu_ms_total": 60.276,
+  "max_us": 308.153,
+  "median_us": 55.431,
+  "p95_us": 71.002,
+  "peak_traced_python_heap_bytes": 50640,
+  "samples": 1000,
+  "scope": "1000 preloaded synthetic RecipeResult byte-pin+JSON conversions; no file IO, auth, cluster or GPU"
+}

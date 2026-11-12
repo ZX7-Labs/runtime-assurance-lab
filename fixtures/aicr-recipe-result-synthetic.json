@@ -1,0 +1,26 @@
+{
+  "apiVersion": "aicr.run/v1",
+  "componentRefs": [
+    {
+      "name": "gpu-operator",
+      "source": "registry.invalid/synthetic",
+      "type": "Helm",
+      "version": "synthetic"
+    }
+  ],
+  "criteria": {
+    "accelerator": "h100",
+    "intent": "inference",
+    "os": "cos",
+    "platform": "dynamo",
+    "service": "gke"
+  },
+  "deploymentOrder": [
+    "gpu-operator"
+  ],
+  "kind": "RecipeResult",
+  "metadata": {
+    "appliedOverlays": [],
+    "version": "synthetic-0"
+  }
+}
