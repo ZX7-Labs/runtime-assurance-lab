@@ -48,7 +48,7 @@ Follow each community's posting/self-promotion rules. **Do not** cross-post iden
 
 ## GitHub metadata to set manually
 
-Some settings are not available through the repository-file API; an owner should inspect [Settings](https://github.com/ZX7-Labs/runtime-assurance-lab/settings), not assume they were changed.
+**Observed on 2026-11-13 via the public GitHub repository API:** About description is empty, topics are empty, homepage is unset, Discussions is disabled and Wiki is enabled. The connected source-write tools do not expose repository settings updates. The owner should check [Settings](https://github.com/ZX7-Labs/runtime-assurance-lab/settings) / the repository About sidebar; none of these settings was changed in this audit.
 
 - **About → Description:** `Offline AI workload evidence research: intent vs observation, trust boundaries, reproducible tests; not production assurance.`
 - **About → Website (optional):** use the repo's documentation, not a nonexistent marketing site.
@@ -56,6 +56,7 @@ Some settings are not available through the repository-file API; an owner should
 - **Social preview (optional):** a truthful static card should include `Research prototype` and `GPU execution not verified`; no unauthorized NVIDIA/Google branding.
 - **Security:** check whether GitHub **private vulnerability reporting** is enabled before asking for confidential reports; `SECURITY.md` must not imply it is already enabled.
 - **Discussions:** optional, only enable if someone can moderate it. Issues remain the primary reproducible work queue.
+- **Wiki:** currently enabled but unused in this repository; disable it if all project documentation should live in the versioned `docs/` tree. This is a suggested owner-side setting, not a performed change.
 
 GitHub's official guidance: [community health](https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions), [topics](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/classifying-your-repository-with-topics), [social preview](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/customizing-your-repositorys-social-media-preview).
 

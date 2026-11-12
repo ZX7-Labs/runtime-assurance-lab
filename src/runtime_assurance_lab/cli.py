@@ -78,9 +78,11 @@ def demo(fixtures: Path, output: Path):
         findings.append(decision)
     checkpoint = {"expected_count": len(events), "expected_head": head(events), "trusted_now": FIXED_NOW.isoformat()}
     success, detail = verify(events, trust, expected_head=checkpoint["expected_head"], expected_count=checkpoint["expected_count"])
-    assert success, detail
+    if not success:
+        raise ValueError(f"demo journal verification failed: {detail}")
     semantic_ok, semantic_reason = verify_decision_semantics(events, trusted_now=checkpoint["trusted_now"])
-    assert semantic_ok, semantic_reason
+    if not semantic_ok:
+        raise ValueError(f"demo semantic verification failed: {semantic_reason}")
     dump(output/"journal.json", events)
     dump(output/"trust-public.json", trust)
     dump(output/"checkpoint.json", checkpoint)
