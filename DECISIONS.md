@@ -1,0 +1,9 @@
+# Architecture decision record (2026-11-12)
+
+1. **D-001 – Local only, no remote writes.** Connected repository `ZX7-Labs/runtime-assurance-lab` on `main` had just `README.md` and GitHub reports `visibility=public`. User says private by default. Keep local changes in `/mnt/data/runtime-assurance-lab`; no remote write or visibility mutation.
+2. **D-002 – B over A.** Test a bounded event-sourced cross-plane correlation contract before any Kubernetes operator. A cluster-wide reconciler duplicates proven upstream observer behavior and requires unjustified privileges. See `PLAN.md`.
+3. **D-003 – No new signing infrastructure.** For offline signature-attack tests use existing PyCA Ed25519 primitive with generated ephemeral keys. Intended future interoperability is Sigstore bundles, independent trust roots, and a durable transparency/immutable store—not this toy journal protocol.
+4. **D-004 – Fail closed on weak evidence.** Matched but `declared`/`inferred`/`unresolved` models are `UNKNOWN`, not `OK`; old observations `STALE`. Provenance claims aren't proof of execution, and `verified` comes from a trusted adapter in a future system, not an arbitrary payload.
+5. **D-005 – Policy isolation.** Pure evaluator controls `OK/DRIFT/UNKNOWN/STALE`; signed decisions must be recomputed from signed parents. Independent clock/policy pin required for real assurance.
+6. **D-006 – Private source licensing undecided.** Do not add an OSI license file or promise open-core/dual licensing before legal/product evidence. Third-party libraries remain under their own licenses.
+7. **D-007 – Evidential measurement.** Synthetic 700-case baseline and microbench are not live tool or real detection-latency results. Use labeled cases and report throughput/CPU/memory with exact method; real comparisons remain blocked.

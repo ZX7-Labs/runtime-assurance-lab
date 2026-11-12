@@ -1,0 +1,70 @@
+[
+  {
+    "evaluated_at": "2026-11-12T03:25:00+00:00",
+    "fixture": "clean",
+    "policy_version": "ral-intent-observation-v1",
+    "rules": [],
+    "status": "OK",
+    "workload": "lab/demo"
+  },
+  {
+    "evaluated_at": "2026-11-12T03:25:00+00:00",
+    "fixture": "model-drift",
+    "policy_version": "ral-intent-observation-v1",
+    "rules": [
+      "MODEL_DIGEST_MISMATCH"
+    ],
+    "status": "DRIFT",
+    "workload": "lab/demo"
+  },
+  {
+    "evaluated_at": "2026-11-12T03:25:00+00:00",
+    "fixture": "stale",
+    "policy_version": "ral-intent-observation-v1",
+    "rules": [
+      "EVIDENCE_EXPIRED"
+    ],
+    "status": "STALE",
+    "workload": "lab/demo"
+  },
+  {
+    "evaluated_at": "2026-11-12T03:25:00+00:00",
+    "fixture": "unverified",
+    "policy_version": "ral-intent-observation-v1",
+    "rules": [
+      "MODEL_NOT_CRYPTO_VERIFIED"
+    ],
+    "status": "UNKNOWN",
+    "workload": "lab/demo"
+  },
+  {
+    "evaluated_at": "2026-11-12T03:25:00+00:00",
+    "fixture": "missing",
+    "policy_version": "ral-intent-observation-v1",
+    "rules": [
+      "OBSERVATION_MISSING"
+    ],
+    "status": "UNKNOWN",
+    "workload": "lab/demo"
+  },
+  {
+    "evaluated_at": "2026-11-12T03:25:00+00:00",
+    "fixture": "image-drift",
+    "policy_version": "ral-intent-observation-v1",
+    "rules": [
+      "IMAGE_DIGEST_MISMATCH"
+    ],
+    "status": "DRIFT",
+    "workload": "lab/demo"
+  },
+  {
+    "evaluated_at": "2026-11-12T03:25:00+00:00",
+    "fixture": "platform-drift",
+    "policy_version": "ral-intent-observation-v1",
+    "rules": [
+      "PLATFORM_RECIPE_DIGEST_MISMATCH"
+    ],
+    "status": "DRIFT",
+    "workload": "lab/demo"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "baseline_p95_us": 2.444,
+  "checks": {
+    "crypto_verification_measured": true,
+    "evaluation_p95_under_1ms": true,
+    "evaluation_p95_under_20x_naive": true,
+    "python_heap_peak_bounded": true,
+    "signed_pipeline_p95_under_10ms": true,
+    "synthetic_fpr_le_1pct": true,
+    "synthetic_recall_ge_98pct": true
+  },
+  "passed": true,
+  "proposed_p95_us": 20.43,
+  "scope": "pilot synthetic-only acceptance thresholds, not release gate"
+}

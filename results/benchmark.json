@@ -1,0 +1,153 @@
+{
+  "class_balance": {
+    "clean": 70,
+    "needs_attention": 630
+  },
+  "crypto": {
+    "append_sign_ms": 9.714829,
+    "append_sign_per_event_us": 53.97127222222222,
+    "events": 180,
+    "verify_ms": 23.518234,
+    "verify_per_event_us": 130.65685555555555
+  },
+  "definitions": {
+    "cpu": "process CPU time in an in-process Python microbenchmark",
+    "false_positive": "an alert on a constructed fully verified and fresh clean case",
+    "latency": "per-evaluation Python microseconds, not event-to-detection or cluster latency",
+    "memory": "peak traced Python heap allocations; not pod RSS or cluster overhead",
+    "positive": "intentionally mutated or unverified scenario; UNKNOWN/STALE/DRIFT all count as needs-attention"
+  },
+  "experiment": "offline-synthetic-v1",
+  "fixed_now": "2026-11-12T03:25:00+00:00",
+  "naive_local_comparator": {
+    "classification": {
+      "by_scenario": {
+        "clean": {
+          "alerts": 0,
+          "total": 70
+        },
+        "future": {
+          "alerts": 0,
+          "total": 70
+        },
+        "image_digest": {
+          "alerts": 70,
+          "total": 70
+        },
+        "missing": {
+          "alerts": 0,
+          "total": 70
+        },
+        "model_digest": {
+          "alerts": 0,
+          "total": 70
+        },
+        "model_ref": {
+          "alerts": 70,
+          "total": 70
+        },
+        "platform_recipe_digest": {
+          "alerts": 0,
+          "total": 70
+        },
+        "stale": {
+          "alerts": 0,
+          "total": 70
+        },
+        "unresolved": {
+          "alerts": 0,
+          "total": 70
+        },
+        "unverified": {
+          "alerts": 0,
+          "total": 70
+        }
+      },
+      "false_positive_rate": 0.0,
+      "fn": 490,
+      "fp": 0,
+      "recall": 0.2222222222222222,
+      "tn": 70,
+      "tp": 140
+    },
+    "microbench": {
+      "cpu_ms": 13.125351,
+      "evaluations": 3500,
+      "p50_us": 1.953,
+      "p95_us": 2.444,
+      "p99_us": 3.655,
+      "python_heap_peak_bytes": 113868,
+      "wall_ms": 13.100542
+    }
+  },
+  "proposed": {
+    "classification": {
+      "by_scenario": {
+        "clean": {
+          "alerts": 0,
+          "total": 70
+        },
+        "future": {
+          "alerts": 70,
+          "total": 70
+        },
+        "image_digest": {
+          "alerts": 70,
+          "total": 70
+        },
+        "missing": {
+          "alerts": 70,
+          "total": 70
+        },
+        "model_digest": {
+          "alerts": 70,
+          "total": 70
+        },
+        "model_ref": {
+          "alerts": 70,
+          "total": 70
+        },
+        "platform_recipe_digest": {
+          "alerts": 70,
+          "total": 70
+        },
+        "stale": {
+          "alerts": 70,
+          "total": 70
+        },
+        "unresolved": {
+          "alerts": 70,
+          "total": 70
+        },
+        "unverified": {
+          "alerts": 70,
+          "total": 70
+        }
+      },
+      "false_positive_rate": 0.0,
+      "fn": 0,
+      "fp": 0,
+      "recall": 1.0,
+      "tn": 70,
+      "tp": 630
+    },
+    "microbench": {
+      "cpu_ms": 64.428103,
+      "evaluations": 3500,
+      "p50_us": 18.097,
+      "p95_us": 20.43,
+      "p99_us": 60.058,
+      "python_heap_peak_bytes": 118490,
+      "wall_ms": 64.40666
+    }
+  },
+  "sample_size": 700,
+  "synthetic_event_to_verdict": {
+    "events_processed": 50,
+    "p50_us": 715.751,
+    "p95_us": 1178.571,
+    "p99_us": 1585.659,
+    "scope": "in-memory synthetic input through signing, evidence integrity check and semantic decision verification; excludes collection/polling/network/disk"
+  },
+  "upstream_live_comparison_executed": false
+}

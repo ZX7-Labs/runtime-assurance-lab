@@ -1,0 +1,11 @@
+{
+  "workload": "lab/demo",
+  "model_ref": "hf://lab/approved",
+  "model_digest": "sha256:9372c470eeadd5ecd9c3c74c2b3cb633f8e2f2fad799250a0f70d652b6b825e4",
+  "image_digest": "sha256:6105d6cc76af400325e94d588ce511be5bfdbb73b437dc51eca43917d7a43e3d",
+  "platform_recipe_digest": "sha256:71f6a693dd02701412ea5b0c295b88d2a6d956e3526714b23541b69aab1b935e",
+  "observed_at": "2026-11-12T03:24:50Z",
+  "model_confidence": "verified",
+  "evidence_locator": "synthetic://lab/demo",
+  "source": "synthetic-aibom-normalized"
+}

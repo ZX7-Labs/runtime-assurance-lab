@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "runtime-assurance-lab"
+version = "0.1.0"
+description = "Local research PoC: signed cross-plane AI runtime evidence correlation"
+requires-python = ">=3.11"
+dependencies = ["cryptography>=42,<48"]
+
+[project.optional-dependencies]
+test = ["pytest>=8,<10"]
+
+[project.scripts]
+ral = "runtime_assurance_lab.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
