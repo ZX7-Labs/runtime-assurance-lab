@@ -69,6 +69,39 @@ python -m compileall -q src tests scripts
 
 See [recorded commands and results](../EVIDENCE.md). Historical synthetic measurements cannot be compared to NVIDIA's published controller CPU/memory numbers: they measure different systems under different conditions.
 
+## Wheel and sdist check (issue #5)
+
+One independent run of the build-and-install path, on a fresh checkout. This is a single observation on one OS and Python version, not a statement about other platforms, and it does not replace the CI matrix.
+
+- Commit: `efa069cdfbaae19da610dd98658e42a8adb98f77` (clean checkout of `main`).
+- Environment: Windows 11 (10.0.26300), x86-64, Python 3.14.4, pip 26.0.1, `build` from PyPI, normal build isolation with network access to PyPI (setuptools and, at install time, `cryptography` and `cffi` were downloaded; installed `cryptography` 47.0.0). The project's declared range is Python 3.11 and 3.13; 3.14 is outside the CI matrix.
+
+Commands (a disposable build venv; nothing is committed, and `dist/` is outside the checkout):
+
+```sh
+python -m venv build-env
+build-env/bin/python -m pip install build        # Windows: build-env\Scripts\python.exe
+build-env/bin/python -m build --wheel --sdist --outdir ../dist .
+python -m venv env-wheel && env-wheel/bin/python -m pip install ../dist/runtime_assurance_lab-0.1.0-py3-none-any.whl
+python -m venv env-sdist && env-sdist/bin/python -m pip install ../dist/runtime_assurance_lab-0.1.0.tar.gz
+```
+
+Observed:
+
+- Build succeeded and produced `runtime_assurance_lab-0.1.0-py3-none-any.whl` (22 entries) and `runtime_assurance_lab-0.1.0.tar.gz` (49 entries).
+- Wheel metadata: `License-Expression: Apache-2.0`, `LICENSE` and `NOTICE` under `dist-info/licenses/`, and the README as the long description. The sdist contains `LICENSE`, `NOTICE`, `README.md`, `pyproject.toml`, `src/` and `tests/` (but not `fixtures/`, `scripts/` or `docs/`, so the `fixtures/` paths below are from the checkout).
+- Both installs succeeded; the package imports from `site-packages`, not from the checkout.
+
+From a directory outside the repository (`FIX` is the checkout's `fixtures/` directory), with each installed `ral`:
+
+| Command | Expected | Observed |
+| --- | --- | --- |
+| `ral --help` | usage, exit 0 | usage listing 11 subcommands, exit 0 (wheel and sdist installs) |
+| `ral evaluate --intent FIX/intent.json --observation FIX/clean.json --now 2026-11-12T03:25:00Z` | `UNKNOWN`, exit 2 | `{"rules": ["SOURCE_AUTHENTICITY_UNVERIFIED"], "status": "UNKNOWN", "workload": "lab/demo"}`, exit 2 (both installs) |
+| `ral demo --fixtures FIX --output demo` then `ral verify --journal demo/journal.json --trust demo/trust-public.json --checkpoint demo/checkpoint.json` | verified | `demo` exit 0; `verify` prints `{"reason": "DECISIONS_RECOMPUTED", "verified": true}`, exit 0 (wheel install) |
+
+Not checked: the test suite and `scripts/` against the installed package (the wheel does not contain them), Linux and macOS, Python 3.11 and 3.13, and an offline or `--no-build-isolation` build. No packaging defect was found, so no code change is proposed. The `ral` wrapper in a venv is `ral.exe` on Windows.
+
 ## Interpret the four verdicts
 
 | Status | Meaning | Do not conclude |
